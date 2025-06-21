@@ -27,7 +27,7 @@ const Index = () => {
   const alerts = [
     {
       id: 1,
-      type: "warning",
+      type: "warning" as const,
       message: "Monthly spend is 71% of budget",
       service: "EC2",
       amount: 847.32,
@@ -35,7 +35,7 @@ const Index = () => {
     },
     {
       id: 2,
-      type: "info",
+      type: "info" as const,
       message: "RDS costs increased 15% this week",
       service: "RDS",
       amount: 156.78,
