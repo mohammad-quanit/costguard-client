@@ -50,6 +50,39 @@ export interface Budget {
   monthlyHistory: BudgetHistory[];
 }
 
+// New service-related types
+export interface ServiceData {
+  serviceName: string;
+  totalCost: number;
+  totalUsage: number;
+  unit: string;
+  currency: string;
+  percentage: number;
+}
+
+export interface CurrentMonthService {
+  serviceName: string;
+  cost: number;
+  usage: number;
+  unit: string;
+  currency: string;
+}
+
+export interface ServiceSummary {
+  totalServices: number;
+  currentMonthServices: number;
+  topServiceAllTime: string;
+  topServiceCurrentMonth: string;
+  topServiceCostAllTime: number;
+  topServiceCostCurrentMonth: number;
+}
+
+export interface Services {
+  allPeriods: ServiceData[];
+  currentMonth: CurrentMonthService[];
+  summary: ServiceSummary;
+}
+
 export interface CostUsageResponse {
   totalCost: string;
   dailyAverage: string;
@@ -59,6 +92,7 @@ export interface CostUsageResponse {
   currency: string;
   start: string;
   end: string;
+  services: Services;
   budget: Budget;
 }
 

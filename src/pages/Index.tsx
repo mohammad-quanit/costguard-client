@@ -24,6 +24,7 @@ const Index = () => {
     budgetCards,
     multiBudgetMetrics,
     budgetHistories,
+    rawData,
     isLoading, 
     error, 
     refetch,
@@ -275,7 +276,11 @@ const Index = () => {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <CostChart data={chartData} />
-              <ServiceBreakdown />
+              <ServiceBreakdown 
+                services={rawData?.services}
+                totalCost={dashboardMetrics.totalCost} 
+                currency={dashboardMetrics.currency}
+              />
             </div>
           </TabsContent>
 
@@ -292,7 +297,12 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="services" className="space-y-6">
-            <ServiceBreakdown detailed={true} />
+            <ServiceBreakdown 
+              detailed={true} 
+              services={rawData?.services}
+              totalCost={dashboardMetrics.totalCost} 
+              currency={dashboardMetrics.currency}
+            />
           </TabsContent>
 
           <TabsContent value="alerts" className="space-y-6">

@@ -4,7 +4,7 @@ import { CostUsageResponse, DashboardMetrics, ChartDataPoint, BudgetCardData, Mu
 
 // Mock data for fallback when API is not available
 const mockApiResponse: CostUsageResponse = {
-  totalCost: "5999.61",
+  totalCost: "59.61",
   dailyAverage: "0.35",
   averageMonthlyCost: "9.93",
   currentMonthCost: "0.00",
@@ -12,6 +12,58 @@ const mockApiResponse: CostUsageResponse = {
   currency: "USD",
   start: "2025-01-01",
   end: "2025-06-22",
+  services: {
+    allPeriods: [
+      {
+        serviceName: "Amazon Neptune",
+        totalCost: 58.6421,
+        totalUsage: 39023093.3621,
+        unit: "N/A",
+        currency: "USD",
+        percentage: 98.38
+      },
+      {
+        serviceName: "EC2 - Other",
+        totalCost: 0.9654,
+        totalUsage: 44.2677,
+        unit: "N/A",
+        currency: "USD",
+        percentage: 1.62
+      },
+      {
+        serviceName: "Amazon Simple Storage Service",
+        totalCost: 0.0003,
+        totalUsage: 1948.9428,
+        unit: "N/A",
+        currency: "USD",
+        percentage: 0
+      }
+    ],
+    currentMonth: [
+      {
+        serviceName: "AWS Backup",
+        cost: 0,
+        usage: 0,
+        unit: "N/A",
+        currency: "USD"
+      },
+      {
+        serviceName: "Amazon Simple Storage Service",
+        cost: 0,
+        usage: 237.1385,
+        unit: "N/A",
+        currency: "USD"
+      }
+    ],
+    summary: {
+      totalServices: 20,
+      currentMonthServices: 9,
+      topServiceAllTime: "Amazon Neptune",
+      topServiceCurrentMonth: "AWS Backup",
+      topServiceCostAllTime: 58.6421,
+      topServiceCostCurrentMonth: 0
+    }
+  },
   budget: {
     monthlyBudget: "50.00",
     budgetUtilization: "0.00",
