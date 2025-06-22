@@ -11,6 +11,7 @@ import { AlertsPanel } from "@/components/AlertsPanel";
 import { BudgetCard } from "@/components/BudgetCard";
 import { ServiceBreakdown } from "@/components/ServiceBreakdown";
 import { HeaderNav } from "@/components/HeaderNav";
+import { DashboardCard } from "@/components/DashboardCard";
 
 const Index = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("30d");
@@ -62,73 +63,36 @@ const Index = () => {
           </p>
         </div>
 
-        {/* Key Metrics Row */}
+        {/* Dashboard Cards Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Current Month</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
-                ${costData.currentSpend.toFixed(2)}
-              </div>
-              <div className="flex items-center mt-1">
-                <TrendingUp className="h-4 w-4 text-red-500 mr-1" />
-                <span className="text-sm text-red-600">
-                  +17% from last month
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Monthly Budget</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
-                ${costData.monthlyBudget.toFixed(2)}
-              </div>
-              <div className="flex items-center mt-1">
-                <span className="text-sm text-slate-600">
-                  ${(costData.monthlyBudget - costData.currentSpend).toFixed(2)} remaining
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-orange-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Daily Average</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
-                ${costData.dailyAverage.toFixed(2)}
-              </div>
-              <div className="flex items-center mt-1">
-                <TrendingDown className="h-4 w-4 text-green-500 mr-1" />
-                <span className="text-sm text-green-600">
-                  -5% this week
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Projected Total</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
-                ${costData.projection.toFixed(2)}
-              </div>
-              <div className="flex items-center mt-1">
-                <Badge variant={costData.projection > costData.monthlyBudget ? "destructive" : "secondary"}>
-                  {costData.projection > costData.monthlyBudget ? "Over Budget" : "On Track"}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+          <DashboardCard 
+            title="Current Month"
+            value={`$${costData.currentSpend.toFixed(2)}`}
+            change="+17% from last month"
+            changeType="increase"
+            borderColor="blue"
+          />
+          <DashboardCard 
+            title="Monthly Budget"
+            value={`$${costData.monthlyBudget.toFixed(2)}`}
+            change={`$${(costData.monthlyBudget - costData.currentSpend).toFixed(2)} remaining`}
+            changeType="neutral"
+            borderColor="green"
+          />
+          <DashboardCard 
+            title="Daily Average"
+            value={`$${costData.dailyAverage.toFixed(2)}`}
+            change="-5% this week"
+            changeType="decrease"
+            borderColor="orange"
+          />
+          <DashboardCard 
+            title="Projected Total"
+            value={`$${costData.projection.toFixed(2)}`}
+            change={costData.projection > costData.monthlyBudget ? "Over Budget" : "On Track"}
+            changeType={costData.projection > costData.monthlyBudget ? "increase" : "neutral"}
+            borderColor="purple"
+          />
         </div>
 
         {/* Budget Progress */}
