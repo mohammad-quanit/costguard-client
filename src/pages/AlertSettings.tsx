@@ -3,19 +3,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AlertSettingsForm } from "@/components/AlertSettingsForm";
 import { NotificationToggle } from "@/components/NotificationToggle";
 import { Settings, Bell } from "lucide-react";
+import { Layout } from "@/components/Layout";
 
 const AlertSettings = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold text-slate-900">Alert Settings</h1>
-          </div>
-        </div>
-      </header>
-      
+    <Layout>
       <main className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-900">Alert Settings</h1>
+          <p className="text-slate-600 mt-2">Configure your cost monitoring and notification preferences</p>
+        </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -48,7 +46,7 @@ const AlertSettings = () => {
           </Card>
         </div>
       </main>
-    </div>
+    </Layout>
   );
 };
 

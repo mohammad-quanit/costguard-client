@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Settings, DollarSign, History, AlertTriangle } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { Logo } from "./Logo";
 
 export const HeaderNav = () => {
   const location = useLocation();
@@ -20,12 +21,10 @@ export const HeaderNav = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link to="/" className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg">
-                <DollarSign className="h-6 w-6 text-white" />
-              </div>
+              <Logo />
               <div>
-                <h1 className="text-xl font-bold text-slate-900">CloudWatch</h1>
-                <p className="text-sm text-slate-500">Cost Alerting</p>
+                <h1 className="text-xl font-bold text-slate-900">CostGuard</h1>
+                <p className="text-sm text-slate-500">AWS Cost Protection</p>
               </div>
             </Link>
             

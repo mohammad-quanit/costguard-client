@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Bell, Mail, MessageSquare, AlertTriangle } from "lucide-react";
+import { Layout } from "@/components/Layout";
 
 const NotificationLogs = () => {
   const notifications = [
@@ -57,20 +58,19 @@ const NotificationLogs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold text-slate-900">Notification Logs</h1>
-            <Button variant="outline" size="sm">
-              <Bell className="h-4 w-4 mr-2" />
-              Test Notification
-            </Button>
-          </div>
-        </div>
-      </header>
-      
+    <Layout>
       <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Notification Logs</h1>
+            <p className="text-slate-600 mt-2">History of all alert notifications sent from your cost monitoring system</p>
+          </div>
+          <Button variant="outline" size="sm">
+            <Bell className="h-4 w-4 mr-2" />
+            Test Notification
+          </Button>
+        </div>
+        
         <Card>
           <CardHeader>
             <CardTitle>Recent Notifications</CardTitle>
@@ -113,7 +113,7 @@ const NotificationLogs = () => {
           </CardContent>
         </Card>
       </main>
-    </div>
+    </Layout>
   );
 };
 

@@ -25,10 +25,10 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mx-auto mb-4">
+          <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg mx-auto mb-4">
             <DollarSign className="h-6 w-6 text-white" />
           </div>
-          <CardTitle className="text-2xl">CloudWatch Cost Alerting</CardTitle>
+          <CardTitle className="text-2xl">CostGuard</CardTitle>
           <CardDescription>
             Sign in to monitor your AWS spending
           </CardDescription>
