@@ -82,3 +82,27 @@ export interface ChartDataPoint {
   budgeted: number;
   utilization: number;
 }
+
+// New types for multi-budget support
+export interface BudgetCardData {
+  id: string;
+  name: string;
+  amount: number;
+  spent: number;
+  utilization: number;
+  status: 'active' | 'expired' | 'upcoming';
+  startDate: string;
+  endDate: string;
+  currency: string;
+  isOverBudget: boolean;
+  daysRemaining?: number;
+}
+
+export interface MultiBudgetMetrics {
+  totalBudgets: number;
+  activeBudgets: number;
+  totalBudgetAmount: number;
+  totalSpent: number;
+  overallUtilization: number;
+  budgetsOverLimit: number;
+}

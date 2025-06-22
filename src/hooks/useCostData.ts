@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { CostService } from '@/services/costService';
-import { CostUsageResponse, DashboardMetrics, ChartDataPoint } from '@/types/api';
+import { CostUsageResponse, DashboardMetrics, ChartDataPoint, BudgetCardData, MultiBudgetMetrics } from '@/types/api';
 
 // Mock data for fallback when API is not available
 const mockApiResponse: CostUsageResponse = {
@@ -148,6 +148,43 @@ const mockApiResponse: CostUsageResponse = {
           totalMonths: 7,
           overBudgetPercentage: "0.00"
         }
+      },
+      {
+        budgetName: "Testing-Budget",
+        budgetType: "COST",
+        timeUnit: "MONTHLY",
+        budgetLimit: {
+          amount: "40.0",
+          unit: "USD"
+        },
+        monthlyData: [
+          {
+            timePeriod: {
+              start: "2025-06-01T00:00:00.000Z",
+              end: "2025-07-01T00:00:00.000Z"
+            },
+            budgetedAmount: {
+              amount: "40",
+              unit: "USD"
+            },
+            actualAmount: {
+              amount: "0",
+              unit: "USD"
+            },
+            utilization: "0.00"
+          }
+        ],
+        totalMonths: 1,
+        summary: {
+          totalBudgeted: "40.00",
+          totalActual: "0.00",
+          averageUtilization: "0.00",
+          maxUtilization: "0.00",
+          minUtilization: "0.00",
+          monthsOverBudget: 0,
+          totalMonths: 1,
+          overBudgetPercentage: "0.00"
+        }
       }
     ]
   }
@@ -178,6 +215,12 @@ export const useCostData = () => {
   // Transform data for charts
   const chartData: ChartDataPoint[] = CostService.transformToChartData(dataToUse);
 
+  // Transform data for multi-budget cards
+  const budgetCards: BudgetCardData[] = CostService.transformToBudgetCards(dataToUse);
+
+  // Calculate multi-budget metrics
+  const multiBudgetMetrics: MultiBudgetMetrics = CostService.calculateMultiBudgetMetrics(budgetCards);
+
   return {
     // Raw API data
     rawData: dataToUse,
@@ -185,6 +228,9 @@ export const useCostData = () => {
     // Transformed data
     dashboardMetrics,
     chartData,
+    budgetCards,
+    multiBudgetMetrics,
+    budgetHistories: dataToUse.budget.monthlyHistory,
     
     // Query states
     isLoading,

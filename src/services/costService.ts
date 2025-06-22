@@ -1,5 +1,5 @@
 import { apiClient, API_ENDPOINTS } from '@/lib/api';
-import { CostUsageResponse, DashboardMetrics, ChartDataPoint } from '@/types/api';
+import { CostUsageResponse, DashboardMetrics, ChartDataPoint, BudgetCardData, MultiBudgetMetrics } from '@/types/api';
 
 export class CostService {
   /**
@@ -52,6 +52,75 @@ export class CostService {
         utilization: parseFloat(monthData.utilization),
       };
     });
+  }
+
+  /**
+   * Transform budget history to budget cards data
+   */
+  static transformToBudgetCards(data: CostUsageResponse): BudgetCardData[] {
+    const currentDate = new Date();
+    
+    return data.budget.monthlyHistory.map((budget, index) => {
+      // Calculate overall budget metrics from monthly data
+      const totalBudgeted = parseFloat(budget.summary.totalBudgeted);
+      const totalSpent = parseFloat(budget.summary.totalActual);
+      const utilization = totalSpent > 0 ? (totalSpent / totalBudgeted) * 100 : 0;
+      
+      // Determine budget period (use first and last month from monthly data)
+      const firstMonth = budget.monthlyData[0];
+      const lastMonth = budget.monthlyData[budget.monthlyData.length - 1];
+      const startDate = firstMonth ? firstMonth.timePeriod.start : new Date().toISOString();
+      const endDate = lastMonth ? lastMonth.timePeriod.end : new Date().toISOString();
+      
+      // Determine status based on dates
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      let status: 'active' | 'expired' | 'upcoming' = 'active';
+      let daysRemaining: number | undefined;
+      
+      if (currentDate < start) {
+        status = 'upcoming';
+      } else if (currentDate > end) {
+        status = 'expired';
+      } else {
+        status = 'active';
+        daysRemaining = Math.ceil((end.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+      }
+
+      return {
+        id: `budget-${index}`,
+        name: budget.budgetName,
+        amount: totalBudgeted,
+        spent: totalSpent,
+        utilization: utilization,
+        status: status,
+        startDate: startDate,
+        endDate: endDate,
+        currency: data.currency,
+        isOverBudget: totalSpent > totalBudgeted,
+        daysRemaining: daysRemaining,
+      };
+    });
+  }
+
+  /**
+   * Calculate multi-budget metrics
+   */
+  static calculateMultiBudgetMetrics(budgets: BudgetCardData[]): MultiBudgetMetrics {
+    const totalBudgetAmount = budgets.reduce((sum, budget) => sum + budget.amount, 0);
+    const totalSpent = budgets.reduce((sum, budget) => sum + budget.spent, 0);
+    const activeBudgets = budgets.filter(b => b.status === 'active').length;
+    const budgetsOverLimit = budgets.filter(b => b.isOverBudget).length;
+    const overallUtilization = totalBudgetAmount > 0 ? (totalSpent / totalBudgetAmount) * 100 : 0;
+
+    return {
+      totalBudgets: budgets.length,
+      activeBudgets: activeBudgets,
+      totalBudgetAmount: totalBudgetAmount,
+      totalSpent: totalSpent,
+      overallUtilization: overallUtilization,
+      budgetsOverLimit: budgetsOverLimit,
+    };
   }
 
   /**

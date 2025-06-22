@@ -9,6 +9,7 @@ import { AlertTriangle, TrendingUp, TrendingDown, DollarSign, Bell, Settings, Re
 import { CostChart } from "@/components/CostChart";
 import { AlertsPanel } from "@/components/AlertsPanel";
 import { BudgetCard } from "@/components/BudgetCard";
+import { MultiBudgetCard } from "@/components/MultiBudgetCard";
 import { ServiceBreakdown } from "@/components/ServiceBreakdown";
 import { HeaderNav } from "@/components/HeaderNav";
 import { DashboardCard } from "@/components/DashboardCard";
@@ -20,6 +21,9 @@ const Index = () => {
   const { 
     dashboardMetrics, 
     chartData, 
+    budgetCards,
+    multiBudgetMetrics,
+    budgetHistories,
     isLoading, 
     error, 
     refetch,
@@ -155,48 +159,114 @@ const Index = () => {
         {/* Dashboard Cards Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <DashboardCard 
-            title="Current Month"
-            value={formatCurrency(dashboardMetrics.currentMonthCost, dashboardMetrics.currency)}
-            change={`${dashboardMetrics.serviceCount} services`}
+            title="Total Budgets"
+            value={`${multiBudgetMetrics.totalBudgets}`}
+            change={`${multiBudgetMetrics.activeBudgets} active, ${multiBudgetMetrics.totalBudgets - multiBudgetMetrics.activeBudgets} inactive`}
             changeType="neutral"
             borderColor="blue"
           />
           <DashboardCard 
-            title="Monthly Budget"
-            value={formatCurrency(dashboardMetrics.monthlyBudget, dashboardMetrics.currency)}
-            change={formatCurrency(dashboardMetrics.remainingBudget, dashboardMetrics.currency) + " remaining"}
-            changeType={dashboardMetrics.remainingBudget > 0 ? "neutral" : "increase"}
+            title="Total Budget Amount"
+            value={formatCurrency(multiBudgetMetrics.totalBudgetAmount, dashboardMetrics.currency)}
+            change={formatCurrency(multiBudgetMetrics.totalBudgetAmount - multiBudgetMetrics.totalSpent, dashboardMetrics.currency) + " remaining"}
+            changeType={multiBudgetMetrics.totalSpent > multiBudgetMetrics.totalBudgetAmount ? "increase" : "neutral"}
             borderColor="green"
           />
           <DashboardCard 
-            title="Daily Average"
-            value={formatCurrency(dashboardMetrics.dailyAverage, dashboardMetrics.currency)}
-            change={`Total: ${formatCurrency(dashboardMetrics.totalCost, dashboardMetrics.currency)}`}
-            changeType="neutral"
+            title="Total Spent"
+            value={formatCurrency(multiBudgetMetrics.totalSpent, dashboardMetrics.currency)}
+            change={`${multiBudgetMetrics.overallUtilization.toFixed(1)}% of total budget`}
+            changeType={multiBudgetMetrics.overallUtilization > 80 ? "warning" : "neutral"}
             borderColor="orange"
           />
           <DashboardCard 
             title="Budget Status"
-            value={dashboardMetrics.budgetStatus.replace('_', ' ').toUpperCase()}
-            change={`${budgetProgress}% utilized`}
-            changeType={isOverBudget ? "increase" : isNearBudget ? "warning" : "decrease"}
+            value={multiBudgetMetrics.budgetsOverLimit > 0 ? "OVER BUDGET" : "ON TRACK"}
+            change={multiBudgetMetrics.budgetsOverLimit > 0 ? `${multiBudgetMetrics.budgetsOverLimit} budget${multiBudgetMetrics.budgetsOverLimit > 1 ? 's' : ''} over limit` : `All ${multiBudgetMetrics.totalBudgets} budgets within limits`}
+            changeType={multiBudgetMetrics.budgetsOverLimit > 0 ? "increase" : "decrease"}
             borderColor="purple"
           />
         </div>
 
-        {/* Budget Progress */}
-        <BudgetCard 
-          currentSpend={dashboardMetrics.currentMonthCost}
-          monthlyBudget={dashboardMetrics.monthlyBudget}
-          progress={budgetProgress}
-          isOverBudget={isOverBudget}
-          isNearBudget={isNearBudget}
-        />
+        {/* Multi-Budget Progress Overview */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <DollarSign className="h-5 w-5 mr-2" />
+                Overall Budget Progress
+              </div>
+              <Badge variant={multiBudgetMetrics.budgetsOverLimit > 0 ? "destructive" : "default"}>
+                {multiBudgetMetrics.activeBudgets} Active Budget{multiBudgetMetrics.activeBudgets !== 1 ? 's' : ''}
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              Combined progress across all your budgets
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-600 dark:text-slate-400">Total Progress</span>
+                <span className="text-sm font-medium">
+                  {formatCurrency(multiBudgetMetrics.totalSpent, dashboardMetrics.currency)} / {formatCurrency(multiBudgetMetrics.totalBudgetAmount, dashboardMetrics.currency)}
+                </span>
+              </div>
+              
+              <Progress 
+                value={Math.min(multiBudgetMetrics.overallUtilization, 100)} 
+                className="h-3"
+              />
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="text-center p-2 bg-slate-50 dark:bg-slate-800 rounded">
+                  <div className="font-medium text-slate-900 dark:text-slate-100">
+                    {multiBudgetMetrics.totalBudgets}
+                  </div>
+                  <div className="text-slate-600 dark:text-slate-400">Total Budgets</div>
+                </div>
+                <div className="text-center p-2 bg-slate-50 dark:bg-slate-800 rounded">
+                  <div className="font-medium text-slate-900 dark:text-slate-100">
+                    {multiBudgetMetrics.activeBudgets}
+                  </div>
+                  <div className="text-slate-600 dark:text-slate-400">Active</div>
+                </div>
+                <div className="text-center p-2 bg-slate-50 dark:bg-slate-800 rounded">
+                  <div className={`font-medium ${multiBudgetMetrics.budgetsOverLimit > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                    {multiBudgetMetrics.budgetsOverLimit}
+                  </div>
+                  <div className="text-slate-600 dark:text-slate-400">Over Budget</div>
+                </div>
+                <div className="text-center p-2 bg-slate-50 dark:bg-slate-800 rounded">
+                  <div className={`font-medium ${multiBudgetMetrics.overallUtilization > 100 ? 'text-red-600 dark:text-red-400' : multiBudgetMetrics.overallUtilization > 80 ? 'text-yellow-600 dark:text-yellow-400' : 'text-slate-900 dark:text-slate-100'}`}>
+                    {multiBudgetMetrics.overallUtilization.toFixed(1)}%
+                  </div>
+                  <div className="text-slate-600 dark:text-slate-400">Overall Usage</div>
+                </div>
+              </div>
+
+              {multiBudgetMetrics.budgetsOverLimit > 0 && (
+                <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <div className="flex items-center">
+                    <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 mr-2" />
+                    <span className="text-red-800 dark:text-red-200 font-medium">
+                      {multiBudgetMetrics.budgetsOverLimit} budget{multiBudgetMetrics.budgetsOverLimit > 1 ? 's have' : ' has'} exceeded the limit
+                    </span>
+                  </div>
+                  <p className="text-red-600 dark:text-red-300 text-sm mt-1">
+                    Review your budget details to identify overspending areas.
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-[500px]">
+          <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="budgets">Budgets</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="alerts">Alerts</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -207,6 +277,18 @@ const Index = () => {
               <CostChart data={chartData} />
               <ServiceBreakdown />
             </div>
+          </TabsContent>
+
+          <TabsContent value="budgets" className="space-y-6">
+            <MultiBudgetCard 
+              budgets={budgetCards} 
+              metrics={multiBudgetMetrics}
+              budgetHistories={budgetHistories}
+              onBudgetSelect={(budgetId) => {
+                console.log('Selected budget:', budgetId);
+                // Handle budget selection - could navigate to detailed view
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="services" className="space-y-6">
