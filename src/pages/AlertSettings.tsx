@@ -2,8 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertSettingsForm } from "@/components/AlertSettingsForm";
 import { NotificationToggle } from "@/components/NotificationToggle";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Settings, Bell, Palette } from "lucide-react";
+import { Settings, Bell } from "lucide-react";
 import { Layout } from "@/components/Layout";
 
 const AlertSettings = () => {
@@ -31,37 +30,20 @@ const AlertSettings = () => {
             </CardContent>
           </Card>
 
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Bell className="h-5 w-5 mr-2" />
-                  Notification Preferences
-                </CardTitle>
-                <CardDescription>
-                  Choose how you want to receive alerts
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <NotificationToggle />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Palette className="h-5 w-5 mr-2" />
-                  Appearance
-                </CardTitle>
-                <CardDescription>
-                  Customize the look and feel of your dashboard
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ThemeToggle />
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Bell className="h-5 w-5 mr-2" />
+                Notification Preferences
+              </CardTitle>
+              <CardDescription>
+                Choose how you want to receive alerts
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <NotificationToggle />
+            </CardContent>
+          </Card>
         </div>
       </main>
     </Layout>

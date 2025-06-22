@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import AlertSettings from "./pages/AlertSettings";
+import Settings from "./pages/Settings";
 import History from "./pages/History";
 import NotificationLogs from "./pages/NotificationLogs";
 import NotFound from "./pages/NotFound";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/alerts" element={<AlertSettings />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/history" element={<History />} />
             <Route path="/notifications" element={<NotificationLogs />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
