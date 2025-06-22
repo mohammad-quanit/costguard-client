@@ -1,0 +1,54 @@
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="200" fill="#1e293b" rx="12"/>
+  
+  <!-- Shield Icon -->
+  <g transform="translate(50, 40)">
+    <!-- Shield Background -->
+    <path d="M40 10 L70 20 L70 70 C70 85 55 100 40 100 C25 100 10 85 10 70 L10 20 Z" 
+          fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+    
+    <!-- Dollar Sign -->
+    <text x="40" y="65" text-anchor="middle" fill="white" font-family="Arial, sans-serif" 
+          font-size="32" font-weight="bold">$</text>
+    
+    <!-- Check Mark -->
+    <path d="M30 50 L37 57 L50 40" stroke="white" stroke-width="3" 
+          fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Chart/Graph Element -->
+  <g transform="translate(120, 60)">
+    <!-- Chart Bars -->
+    <rect x="0" y="40" width="8" height="40" fill="#10b981"/>
+    <rect x="12" y="30" width="8" height="50" fill="#3b82f6"/>
+    <rect x="24" y="20" width="8" height="60" fill="#f59e0b"/>
+    <rect x="36" y="35" width="8" height="45" fill="#ef4444"/>
+    
+    <!-- Trend Line -->
+    <path d="M4 70 L16 60 L28 45 L40 55" stroke="#06b6d4" stroke-width="2" 
+          fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Text -->
+  <g transform="translate(200, 70)">
+    <text x="0" y="0" fill="white" font-family="Arial, sans-serif" 
+          font-size="36" font-weight="bold">CostGuard</text>
+    <text x="0" y="25" fill="#94a3b8" font-family="Arial, sans-serif" 
+          font-size="14" font-weight="normal">AWS Cost Protection Dashboard</text>
+    <text x="0" y="45" fill="#64748b" font-family="Arial, sans-serif" 
+          font-size="12" font-weight="normal">Monitor • Alert • Optimize</text>
+  </g>
+  
+  <!-- AWS Lambda Badge -->
+  <g transform="translate(320, 140)">
+    <rect x="0" y="0" width="70" height="20" fill="#ff9900" rx="4"/>
+    <text x="35" y="14" text-anchor="middle" fill="white" 
+          font-family="Arial, sans-serif" font-size="10" font-weight="bold">AWS LAMBDA</text>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <circle cx="350" cy="50" r="3" fill="#3b82f6" opacity="0.6"/>
+  <circle cx="365" cy="35" r="2" fill="#10b981" opacity="0.6"/>
+  <circle cx="380" cy="45" r="2.5" fill="#f59e0b" opacity="0.6"/>
+</svg>
