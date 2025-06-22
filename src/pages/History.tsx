@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CostHistoryChart } from "@/components/CostHistoryChart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { History } from "lucide-react";
+import { History as HistoryIcon } from "lucide-react";
 
 const History = () => {
   const historicalData = [
