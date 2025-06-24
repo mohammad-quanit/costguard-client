@@ -15,9 +15,13 @@ class ApiClient {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     
+    // Get token from localStorage for authenticated requests
+    const token = localStorage.getItem('authToken');
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
@@ -30,6 +34,18 @@ class ApiClient {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        
+        // Handle 401 Unauthorized - token might be expired
+        if (response.status === 401) {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          // Redirect to login if not already there
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
+        }
+        
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
@@ -76,6 +92,12 @@ export const apiClient = new ApiClient(API_BASE_URL);
 
 // API Endpoints
 export const API_ENDPOINTS = {
+  // Cost endpoints
   COST_USAGE: '/cost-usage',
-  // Add more endpoints here as they become available
+  
+  // Auth endpoints
+  AUTH_SIGNUP: '/auth/signup',
+  AUTH_SIGNIN: '/auth/signin',
+  AUTH_REFRESH: '/auth/refresh',
+  AUTH_PROFILE: '/auth/profile',
 } as const;

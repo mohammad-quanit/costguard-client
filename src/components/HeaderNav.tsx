@@ -1,12 +1,25 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Settings, DollarSign, History, AlertTriangle } from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Bell, Settings, DollarSign, History, AlertTriangle, User, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const HeaderNav = () => {
   const location = useLocation();
+  const { user, signOut } = useAuth();
+
+  // Debug logging
+  console.log('HeaderNav - Rendering with user:', user);
+  console.log('HeaderNav - User firstName:', user?.firstName);
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: DollarSign },
@@ -15,6 +28,38 @@ export const HeaderNav = () => {
     { path: "/notifications", label: "Notifications", icon: Bell },
     { path: "/settings", label: "Settings", icon: Settings },
   ];
+
+  const handleSignOut = () => {
+    signOut();
+  };
+
+  const getUserDisplayName = () => {
+    console.log('HeaderNav - User data:', user);
+    console.log('HeaderNav - User firstName:', user?.firstName);
+    console.log('HeaderNav - User lastName:', user?.lastName);
+    
+    // Simple logic: show firstName if available, otherwise fallback
+    if (user?.firstName) {
+      return user.firstName;
+    }
+    
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    
+    return 'User';
+  };
+
+  const getUserInitials = () => {
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    } else if (user?.firstName) {
+      return user.firstName[0].toUpperCase();
+    } else if (user?.email) {
+      return user.email[0].toUpperCase();
+    }
+    return 'U';
+  };
 
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-sm">
@@ -50,22 +95,68 @@ export const HeaderNav = () => {
               })}
             </nav>
           </div>
-          
+
           <div className="flex items-center space-x-4">
+            {/* Notifications */}
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-4 w-4" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
-                2
+              <Badge 
+                variant="destructive" 
+                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+              >
+                3
               </Badge>
             </Button>
-            <Link to="/login">
-              <Button variant="ghost" size="sm">
-                Login
-              </Button>
-            </Link>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              Last updated: <span className="font-medium">2 mins ago</span>
-            </div>
+
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center space-x-2 px-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                    {getUserInitials()}
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                      {getUserDisplayName()}
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                      {user?.email}
+                    </div>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{getUserDisplayName()}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/settings" className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/alerts" className="flex items-center">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Alert Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={handleSignOut}
+                  className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
