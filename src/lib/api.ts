@@ -100,4 +100,8 @@ export const API_ENDPOINTS = {
   AUTH_SIGNIN: '/auth/signin',
   AUTH_REFRESH: '/auth/refresh',
   AUTH_PROFILE: '/auth/profile',
+  
+  // Budget endpoints
+  BUDGET_GET: '/budget',
+  BUDGET_SET: '/budget/set',
 } as const;

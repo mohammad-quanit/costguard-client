@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, Settings, DollarSign, History, AlertTriangle, User, LogOut } from "lucide-react";
+import { Bell, Settings, DollarSign, History, AlertTriangle, User, LogOut, Target } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +23,7 @@ export const HeaderNav = () => {
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: DollarSign },
+    { path: "/budgets", label: "Budgets", icon: Target },
     { path: "/alerts", label: "Alert Settings", icon: AlertTriangle },
     { path: "/history", label: "History", icon: History },
     { path: "/notifications", label: "Notifications", icon: Bell },

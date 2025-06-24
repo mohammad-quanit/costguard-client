@@ -14,6 +14,7 @@ import SignUp from "./pages/SignUp";
 import AlertSettings from "./pages/AlertSettings";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
+import Budgets from "./pages/Budgets";
 import NotificationLogs from "./pages/NotificationLogs";
 import NotFound from "./pages/NotFound";
 
@@ -46,6 +47,11 @@ const App = () => (
               <Route path="/alerts" element={
                 <ProtectedRoute>
                   <AlertSettings />
+                </ProtectedRoute>
+              } />
+              <Route path="/budgets" element={
+                <ProtectedRoute>
+                  <Budgets />
                 </ProtectedRoute>
               } />
               <Route path="/settings" element={
