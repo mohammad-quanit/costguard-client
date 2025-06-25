@@ -393,5 +393,3 @@ const AlertSettings = () => {
 };
 
 export default AlertSettings;
-
-export default AlertSettings;
