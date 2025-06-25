@@ -160,30 +160,30 @@ const Index = () => {
         {/* Dashboard Cards Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <DashboardCard 
-            title="Total Budgets"
+            title="AWS Budgets"
             value={`${multiBudgetMetrics.totalBudgets}`}
             change={`${multiBudgetMetrics.activeBudgets} active, ${multiBudgetMetrics.totalBudgets - multiBudgetMetrics.activeBudgets} inactive`}
             changeType="neutral"
             borderColor="blue"
           />
           <DashboardCard 
-            title="Total Budget Amount"
+            title="AWS Total Budget"
             value={formatCurrency(multiBudgetMetrics.totalBudgetAmount, dashboardMetrics.currency)}
             change={formatCurrency(multiBudgetMetrics.totalBudgetAmount - multiBudgetMetrics.totalSpent, dashboardMetrics.currency) + " remaining"}
             changeType={multiBudgetMetrics.totalSpent > multiBudgetMetrics.totalBudgetAmount ? "increase" : "neutral"}
             borderColor="green"
           />
           <DashboardCard 
-            title="Total Spent"
+            title="AWS Spent"
             value={formatCurrency(multiBudgetMetrics.totalSpent, dashboardMetrics.currency)}
-            change={`${multiBudgetMetrics.overallUtilization.toFixed(1)}% of total budget`}
+            change={`${multiBudgetMetrics.overallUtilization.toFixed(1)}% of AWS budget`}
             changeType={multiBudgetMetrics.overallUtilization > 80 ? "warning" : "neutral"}
             borderColor="orange"
           />
           <DashboardCard 
-            title="Budget Status"
+            title="AWS Budget Status"
             value={multiBudgetMetrics.budgetsOverLimit > 0 ? "OVER BUDGET" : "ON TRACK"}
-            change={multiBudgetMetrics.budgetsOverLimit > 0 ? `${multiBudgetMetrics.budgetsOverLimit} budget${multiBudgetMetrics.budgetsOverLimit > 1 ? 's' : ''} over limit` : `All ${multiBudgetMetrics.totalBudgets} budgets within limits`}
+            change={multiBudgetMetrics.budgetsOverLimit > 0 ? `${multiBudgetMetrics.budgetsOverLimit} AWS budget${multiBudgetMetrics.budgetsOverLimit > 1 ? 's' : ''} over limit` : `All ${multiBudgetMetrics.totalBudgets} AWS budgets within limits`}
             changeType={multiBudgetMetrics.budgetsOverLimit > 0 ? "increase" : "decrease"}
             borderColor="purple"
           />
@@ -195,14 +195,14 @@ const Index = () => {
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center">
                 <DollarSign className="h-5 w-5 mr-2" />
-                Overall Budget Progress
+                AWS Budget Progress Overview
               </div>
               <Badge variant={multiBudgetMetrics.budgetsOverLimit > 0 ? "destructive" : "default"}>
-                {multiBudgetMetrics.activeBudgets} Active Budget{multiBudgetMetrics.activeBudgets !== 1 ? 's' : ''}
+                {multiBudgetMetrics.activeBudgets} Active AWS Budget{multiBudgetMetrics.activeBudgets !== 1 ? 's' : ''}
               </Badge>
             </CardTitle>
             <CardDescription>
-              Combined progress across all your budgets
+              Combined progress across all your AWS budgets
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -224,7 +224,7 @@ const Index = () => {
                   <div className="font-medium text-slate-900 dark:text-slate-100">
                     {multiBudgetMetrics.totalBudgets}
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400">Total Budgets</div>
+                  <div className="text-slate-600 dark:text-slate-400">AWS Budgets</div>
                 </div>
                 <div className="text-center p-2 bg-slate-50 dark:bg-slate-800 rounded">
                   <div className="font-medium text-slate-900 dark:text-slate-100">
@@ -236,7 +236,7 @@ const Index = () => {
                   <div className={`font-medium ${multiBudgetMetrics.budgetsOverLimit > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                     {multiBudgetMetrics.budgetsOverLimit}
                   </div>
-                  <div className="text-slate-600 dark:text-slate-400">Over Budget</div>
+                  <div className="text-slate-600 dark:text-slate-400">Over AWS Budget</div>
                 </div>
                 <div className="text-center p-2 bg-slate-50 dark:bg-slate-800 rounded">
                   <div className={`font-medium ${multiBudgetMetrics.overallUtilization > 100 ? 'text-red-600 dark:text-red-400' : multiBudgetMetrics.overallUtilization > 80 ? 'text-yellow-600 dark:text-yellow-400' : 'text-slate-900 dark:text-slate-100'}`}>
@@ -251,11 +251,11 @@ const Index = () => {
                   <div className="flex items-center">
                     <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 mr-2" />
                     <span className="text-red-800 dark:text-red-200 font-medium">
-                      {multiBudgetMetrics.budgetsOverLimit} budget{multiBudgetMetrics.budgetsOverLimit > 1 ? 's have' : ' has'} exceeded the limit
+                      {multiBudgetMetrics.budgetsOverLimit} AWS budget{multiBudgetMetrics.budgetsOverLimit > 1 ? 's have' : ' has'} exceeded the limit
                     </span>
                   </div>
                   <p className="text-red-600 dark:text-red-300 text-sm mt-1">
-                    Review your budget details to identify overspending areas.
+                    Review your AWS budget details to identify overspending areas.
                   </p>
                 </div>
               )}
@@ -267,7 +267,7 @@ const Index = () => {
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="budgets">Budgets</TabsTrigger>
+            <TabsTrigger value="budgets">AWS Budgets</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="alerts">Alerts</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -322,7 +322,7 @@ const Index = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-sm text-slate-600 dark:text-slate-400">
-                  Settings panel coming soon - configure budget limits, alert thresholds, and notification channels.
+                  Settings panel coming soon - configure AWS budget limits, alert thresholds, and notification channels.
                 </div>
               </CardContent>
             </Card>
