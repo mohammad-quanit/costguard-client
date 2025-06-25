@@ -13,6 +13,7 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 const Budgets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<AppBudget | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Get existing AWS budgets from the cost data hook
   const { budgetCards = [], isLoading: isCostDataLoading, error: costDataError } = useCostData();
@@ -63,6 +64,19 @@ const Budgets = () => {
     getOverBudgetCount
   } = budgetHookResult;
 
+  // Manual refresh function for app budgets
+  const handleRefresh = useCallback(async () => {
+    console.log('Budgets.tsx - Manual refresh triggered');
+    setIsRefreshing(true);
+    try {
+      await fetchBudgets();
+    } catch (error) {
+      console.error('Error refreshing budgets:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [fetchBudgets]);
+
   // STABLE event handlers - memoized with proper dependencies
   const handleCreateBudget = useCallback(() => {
     console.log('Budgets.tsx - handleCreateBudget called');
@@ -108,11 +122,6 @@ const Budgets = () => {
       }
     }
   }, [deleteBudget]);
-
-  const handleRefresh = useCallback(() => {
-    console.log('Budgets.tsx - handleRefresh called');
-    fetchBudgets();
-  }, [fetchBudgets]);
 
   const handleCloseModal = useCallback(() => {
     console.log('Budgets.tsx - handleCloseModal called');
@@ -170,9 +179,9 @@ const Budgets = () => {
           </div>
           
           <div className="flex items-center space-x-3">
-            <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              Refresh
+            <Button variant="outline" onClick={handleRefresh} disabled={isLoading || isRefreshing}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading || isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </Button>
           </div>
         </div>

@@ -20,6 +20,7 @@ const AlertSettings = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Form state for selected budget
   const [alertSettings, setAlertSettings] = useState({
@@ -53,6 +54,18 @@ const AlertSettings = () => {
       setSelectedBudgetId(appBudgets[0].budgetId);
     }
   }, [appBudgets, selectedBudgetId]);
+
+  // Manual refresh function
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchBudgets();
+    } catch (error) {
+      console.error('Error refreshing budgets:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const handleSaveAlerts = async () => {
     if (!selectedBudgetId) return;
@@ -116,9 +129,9 @@ const AlertSettings = () => {
               Configure alerts for your app budgets
             </p>
           </div>
-          <Button variant="outline" onClick={fetchBudgets} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+          <Button variant="outline" onClick={handleRefresh} disabled={isLoading || isRefreshing}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading || isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
         </div>
 
@@ -145,7 +158,7 @@ const AlertSettings = () => {
           </Alert>
         )}
 
-        {appBudgets.length === 0 ? (
+        {appBudgets.length === 0 && !isLoading ? (
           <Card>
             <CardContent className="text-center py-12">
               <Target className="h-12 w-12 text-slate-400 mx-auto mb-4" />
@@ -153,11 +166,29 @@ const AlertSettings = () => {
                 No App Budgets Found
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-4">
-                Create app budgets first to configure alerts
+                Load your app budgets or create new ones to configure alerts
               </p>
-              <Button asChild>
-                <a href="/budgets">Create Budget</a>
-              </Button>
+              <div className="flex justify-center space-x-3">
+                <Button onClick={handleRefresh} disabled={isRefreshing}>
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  {isRefreshing ? 'Loading...' : 'Load Budgets'}
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="/budgets">Create Budget</a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : appBudgets.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <Target className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                Loading Budgets...
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                Please wait while we load your app budgets
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -307,56 +338,26 @@ const AlertSettings = () => {
                           />
                         </div>
 
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="sns-notifications">SNS Notifications</Label>
-                            <p className="text-xs text-slate-500">Receive alerts via AWS SNS</p>
+                        {/* SNS and Slack notifications disabled for now */}
+                        <div className="opacity-50">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <Label>SNS Notifications</Label>
+                              <p className="text-xs text-slate-500">Coming soon - AWS SNS integration</p>
+                            </div>
+                            <Switch disabled checked={false} />
                           </div>
-                          <Switch
-                            id="sns-notifications"
-                            checked={alertSettings.notifications.sns}
-                            onCheckedChange={(checked) => 
-                              setAlertSettings(prev => ({
-                                ...prev,
-                                notifications: { ...prev.notifications, sns: checked }
-                              }))
-                            }
-                          />
                         </div>
 
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="slack-notifications">Slack Notifications</Label>
-                            <p className="text-xs text-slate-500">Receive alerts via Slack</p>
+                        <div className="opacity-50">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <Label>Slack Notifications</Label>
+                              <p className="text-xs text-slate-500">Coming soon - Slack integration</p>
+                            </div>
+                            <Switch disabled checked={false} />
                           </div>
-                          <Switch
-                            id="slack-notifications"
-                            checked={alertSettings.notifications.slack}
-                            onCheckedChange={(checked) => 
-                              setAlertSettings(prev => ({
-                                ...prev,
-                                notifications: { ...prev.notifications, slack: checked }
-                              }))
-                            }
-                          />
                         </div>
-
-                        {alertSettings.notifications.slack && (
-                          <div className="space-y-2 ml-4">
-                            <Label htmlFor="webhook-url">Slack Webhook URL</Label>
-                            <Input
-                              id="webhook-url"
-                              value={alertSettings.notifications.webhookUrl}
-                              onChange={(e) => 
-                                setAlertSettings(prev => ({
-                                  ...prev,
-                                  notifications: { ...prev.notifications, webhookUrl: e.target.value }
-                                }))
-                              }
-                              placeholder="https://hooks.slack.com/services/..."
-                            />
-                          </div>
-                        )}
                       </div>
                     </div>
 

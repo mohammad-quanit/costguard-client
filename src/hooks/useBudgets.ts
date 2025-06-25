@@ -183,22 +183,19 @@ export const useBudgets = (existingAWSBudgets: AWSBudget[] = []): UseBudgetsRetu
     }
   }, [existingAWSBudgets, awsBudgets]);
 
-  // Fetch app budgets on mount only
+  // Fetch app budgets on mount only when explicitly requested
   useEffect(() => {
     let mounted = true;
     
-    const initializeBudgets = async () => {
-      if (mounted) {
-        await fetchBudgets();
-      }
-    };
-    
-    initializeBudgets();
+    // Only fetch if we don't have budgets yet
+    if (mounted && appBudgets.length === 0) {
+      fetchBudgets();
+    }
     
     return () => {
       mounted = false;
     };
-  }, []); // Empty dependency array - only run on mount
+  }, []); // Empty dependency array - only run on mount, and only if no budgets exist
 
   return {
     // Data

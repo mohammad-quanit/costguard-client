@@ -411,56 +411,22 @@ export const BudgetModal = ({
                       />
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    {/* Disabled notification methods */}
+                    <div className="flex items-center justify-between opacity-50">
                       <div>
-                        <Label htmlFor="sns-notifications">SNS Notifications</Label>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">Receive alerts via AWS SNS</p>
+                        <Label>SNS Notifications</Label>
+                        <p className="text-sm text-slate-400">Coming soon - AWS SNS integration</p>
                       </div>
-                      <Switch
-                        id="sns-notifications"
-                        checked={formData.notifications.sns}
-                        onCheckedChange={(checked) => 
-                          setFormData(prev => ({
-                            ...prev,
-                            notifications: { ...prev.notifications, sns: checked }
-                          }))
-                        }
-                      />
+                      <Switch disabled checked={false} />
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between opacity-50">
                       <div>
-                        <Label htmlFor="slack-notifications">Slack Notifications</Label>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">Receive alerts via Slack</p>
+                        <Label>Slack Notifications</Label>
+                        <p className="text-sm text-slate-400">Coming soon - Slack integration</p>
                       </div>
-                      <Switch
-                        id="slack-notifications"
-                        checked={formData.notifications.slack}
-                        onCheckedChange={(checked) => 
-                          setFormData(prev => ({
-                            ...prev,
-                            notifications: { ...prev.notifications, slack: checked }
-                          }))
-                        }
-                      />
+                      <Switch disabled checked={false} />
                     </div>
-
-                    {formData.notifications.slack && (
-                      <div className="space-y-2">
-                        <Label htmlFor="webhookUrl">Slack Webhook URL</Label>
-                        <Input
-                          id="webhookUrl"
-                          value={formData.notifications.webhookUrl || ''}
-                          onChange={(e) => 
-                            setFormData(prev => ({
-                              ...prev,
-                              notifications: { ...prev.notifications, webhookUrl: e.target.value }
-                            }))
-                          }
-                          placeholder="https://hooks.slack.com/services/..."
-                        />
-                      </div>
-                    )}
                   </div>
                 </CardContent>
               </Card>
