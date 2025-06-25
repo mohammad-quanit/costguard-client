@@ -133,16 +133,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await AuthService.signIn({ email, password });
       console.log('AuthContext - Sign in successful:', response);
       
-      // Ensure we have all required data
-      if (!response.tokens.atoken || !response.user) {
+      // Check the actual response structure from your API
+      const hasValidTokens = response.tokens && response.tokens.accessToken;
+      const hasValidUser = response.user && (response.user.userId || response.user.email);
+      
+      if (!hasValidTokens || !hasValidUser) {
+        console.error('AuthContext - Invalid response structure:', {
+          hasTokens: !!response.tokens,
+          hasAccessToken: !!(response.tokens && response.tokens.accessToken),
+          hasUser: !!response.user,
+          hasUserId: !!(response.user && response.user.userId),
+          hasUserEmail: !!(response.user && response.user.email),
+          actualResponse: response
+        });
         throw new Error('Invalid response from server - missing token or user data');
       }
       
       setState(prev => ({
         ...prev,
         user: response.user,
-        token: response.token,
-        refreshToken: response.refreshToken,
+        token: response.tokens.accessToken,
+        refreshToken: response.tokens.refreshToken,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -165,7 +176,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
-    console.log('Attempting sign up for:', email);
+    console.log('AuthContext - Attempting sign up for:', email);
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
@@ -175,23 +186,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         firstName, 
         lastName 
       });
-      console.log('Sign up successful:', response);
+      console.log('AuthContext - Sign up successful:', response);
+      
+      // Check the actual response structure from your API
+      const hasValidTokens = response.tokens && response.tokens.accessToken;
+      const hasValidUser = response.user && (response.user.userId || response.user.email);
+      
+      if (!hasValidTokens || !hasValidUser) {
+        console.error('AuthContext - Invalid signup response structure:', {
+          hasTokens: !!response.tokens,
+          hasAccessToken: !!(response.tokens && response.tokens.accessToken),
+          hasUser: !!response.user,
+          actualResponse: response
+        });
+        throw new Error('Invalid response from server - missing token or user data');
+      }
       
       setState(prev => ({
         ...prev,
         user: response.user,
-        token: response.token,
-        refreshToken: response.refreshToken,
+        token: response.tokens.accessToken,
+        refreshToken: response.tokens.refreshToken,
         isAuthenticated: true,
         isLoading: false,
         error: null,
       }));
       
-      console.log('Auth state updated after sign up');
+      console.log('AuthContext - Auth state updated after sign up');
     } catch (error: any) {
-      console.error('Sign up failed:', error);
+      console.error('AuthContext - Sign up failed:', error);
       setState(prev => ({
         ...prev,
+        user: null,
+        token: null,
+        refreshToken: null,
+        isAuthenticated: false,
         isLoading: false,
         error: error.message || 'Sign up failed',
       }));

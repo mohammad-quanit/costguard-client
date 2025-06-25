@@ -228,20 +228,33 @@ export const DualBudgetManager = ({
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {appBudgets.map((budget) => {
+                    // Add safety checks for all budget properties
+                    const safeStatus = budget.status || 'unknown';
+                    const safeUtilization = budget.utilization || 0;
+                    const safeBudgetName = budget.budgetName || 'Unnamed Budget';
+                    const safeAlertFrequency = budget.alertFrequency || 'daily';
+                    const safeServices = budget.services || [];
+                    const safeCurrency = budget.currency || 'USD';
+                    const safeMonthlyLimit = budget.monthlyLimit || 0;
+                    const safeTotalSpent = budget.totalSpentThisMonth || 0;
+                    const safeRemainingBudget = budget.remainingBudget || 0;
+                    const safeProjectedSpend = budget.projectedMonthlySpend || 0;
+                    const safeNotifications = budget.notifications || { email: false, sns: false, slack: false };
+                    
                     return (
                       <Card key={budget.budgetId} className="border-l-4 border-l-blue-500">
                         <CardContent className="pt-4">
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100">
-                                {budget.budgetName}
+                                {safeBudgetName}
                               </h3>
                               <div className="flex items-center space-x-2 mt-1">
                                 <Badge variant="outline" className="text-xs">
-                                  {budget.alertFrequency}
+                                  {safeAlertFrequency}
                                 </Badge>
                                 <Badge variant="secondary" className="text-xs">
-                                  {budget.services.length} services
+                                  {safeServices.length} services
                                 </Badge>
                                 {!budget.isActive && (
                                   <Badge variant="destructive" className="text-xs">
@@ -250,8 +263,8 @@ export const DualBudgetManager = ({
                                 )}
                               </div>
                             </div>
-                            <Badge className={getBudgetStatusColor(budget.utilization)}>
-                              {budget.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            <Badge className={getBudgetStatusColor(safeUtilization)}>
+                              {safeStatus.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </Badge>
                           </div>
 
@@ -259,31 +272,31 @@ export const DualBudgetManager = ({
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-slate-600 dark:text-slate-400">Progress</span>
                               <span className="text-sm font-medium">
-                                {formatCurrency(budget.totalSpentThisMonth, budget.currency)} / {formatCurrency(budget.monthlyLimit, budget.currency)}
+                                {formatCurrency(safeTotalSpent, safeCurrency)} / {formatCurrency(safeMonthlyLimit, safeCurrency)}
                               </span>
                             </div>
                             
                             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                               <div 
                                 className={`h-2 rounded-full transition-all duration-300 ${
-                                  budget.utilization >= 100 ? 'bg-red-500' : 
-                                  budget.utilization >= 80 ? 'bg-yellow-500' : 'bg-green-500'
+                                  safeUtilization >= 100 ? 'bg-red-500' : 
+                                  safeUtilization >= 80 ? 'bg-yellow-500' : 'bg-green-500'
                                 }`}
-                                style={{ width: `${Math.min(budget.utilization, 100)}%` }}
+                                style={{ width: `${Math.min(safeUtilization, 100)}%` }}
                               />
                             </div>
                             
                             <div className="flex justify-between text-sm">
                               <span className="text-slate-600 dark:text-slate-400">
-                                {budget.utilization.toFixed(1)}% used
+                                {safeUtilization.toFixed(1)}% used
                               </span>
                               <span className={`font-medium ${
-                                budget.remainingBudget < 0 
+                                safeRemainingBudget < 0 
                                   ? 'text-red-600 dark:text-red-400' 
                                   : 'text-green-600 dark:text-green-400'
                               }`}>
-                                {budget.remainingBudget < 0 ? 'Over by ' : 'Remaining: '}
-                                {formatCurrency(Math.abs(budget.remainingBudget), budget.currency)}
+                                {safeRemainingBudget < 0 ? 'Over by ' : 'Remaining: '}
+                                {formatCurrency(Math.abs(safeRemainingBudget), safeCurrency)}
                               </span>
                             </div>
 
@@ -292,14 +305,14 @@ export const DualBudgetManager = ({
                               <div className="space-y-1">
                                 <div className="text-slate-500 dark:text-slate-400">Services:</div>
                                 <div className="flex flex-wrap gap-1">
-                                  {budget.services.slice(0, 3).map((service, idx) => (
+                                  {safeServices.slice(0, 3).map((service, idx) => (
                                     <Badge key={idx} variant="outline" className="text-xs px-1 py-0">
                                       {service}
                                     </Badge>
                                   ))}
-                                  {budget.services.length > 3 && (
+                                  {safeServices.length > 3 && (
                                     <Badge variant="outline" className="text-xs px-1 py-0">
-                                      +{budget.services.length - 3}
+                                      +{safeServices.length - 3}
                                     </Badge>
                                   )}
                                 </div>
@@ -308,13 +321,13 @@ export const DualBudgetManager = ({
                               <div className="space-y-1">
                                 <div className="text-slate-500 dark:text-slate-400">Notifications:</div>
                                 <div className="flex space-x-1">
-                                  {budget.notifications.email && (
+                                  {safeNotifications.email && (
                                     <Badge variant="outline" className="text-xs px-1 py-0">Email</Badge>
                                   )}
-                                  {budget.notifications.sns && (
+                                  {safeNotifications.sns && (
                                     <Badge variant="outline" className="text-xs px-1 py-0">SNS</Badge>
                                   )}
-                                  {budget.notifications.slack && (
+                                  {safeNotifications.slack && (
                                     <Badge variant="outline" className="text-xs px-1 py-0">Slack</Badge>
                                   )}
                                 </div>
@@ -322,12 +335,12 @@ export const DualBudgetManager = ({
                             </div>
 
                             {/* Projected Spend */}
-                            {budget.projectedMonthlySpend > 0 && (
+                            {safeProjectedSpend > 0 && (
                               <div className="text-xs text-slate-500 dark:text-slate-400 border-t pt-2">
                                 <div className="flex items-center justify-between">
                                   <span>Projected Monthly:</span>
-                                  <span className={budget.projectedMonthlySpend > budget.monthlyLimit ? 'text-red-600 dark:text-red-400' : ''}>
-                                    {formatCurrency(budget.projectedMonthlySpend, budget.currency)}
+                                  <span className={safeProjectedSpend > safeMonthlyLimit ? 'text-red-600 dark:text-red-400' : ''}>
+                                    {formatCurrency(safeProjectedSpend, safeCurrency)}
                                   </span>
                                 </div>
                               </div>
