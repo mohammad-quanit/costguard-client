@@ -9,12 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Bell, Settings, DollarSign, History, AlertTriangle, User, LogOut, Target } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { useAuth } from "@/contexts/AuthContext";
 
 export const HeaderNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
   // Debug logging
@@ -26,12 +27,15 @@ export const HeaderNav = () => {
     { path: "/budgets", label: "Budgets", icon: Target },
     { path: "/alerts", label: "Alert Settings", icon: AlertTriangle },
     { path: "/history", label: "History", icon: History },
-    { path: "/notifications", label: "Notifications", icon: Bell },
     { path: "/settings", label: "Settings", icon: Settings },
   ];
 
   const handleSignOut = () => {
     signOut();
+  };
+
+  const handleNotificationsClick = () => {
+    navigate('/notifications');
   };
 
   const getUserDisplayName = () => {
@@ -99,7 +103,13 @@ export const HeaderNav = () => {
 
           <div className="flex items-center space-x-4">
             {/* Notifications */}
-            <Button variant="ghost" size="sm" className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`relative ${location.pathname === '/notifications' ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
+              onClick={handleNotificationsClick}
+              title="Notifications"
+            >
               <Bell className="h-4 w-4" />
               <Badge 
                 variant="destructive" 
