@@ -233,29 +233,29 @@ const AlertSettings = () => {
                     <div className="flex justify-between">
                       <span className="text-sm text-slate-600 dark:text-slate-400">Monthly Limit:</span>
                       <span className="text-sm font-medium">
-                        {BudgetService.formatCurrency(selectedBudget.monthlyLimit, selectedBudget.currency)}
+                        {BudgetService.formatCurrency(selectedBudget.monthlyLimit || 0, selectedBudget.currency || 'USD')}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-slate-600 dark:text-slate-400">Current Spend:</span>
                       <span className="text-sm font-medium">
-                        {BudgetService.formatCurrency(selectedBudget.totalSpentThisMonth, selectedBudget.currency)}
+                        {BudgetService.formatCurrency(selectedBudget.totalSpentThisMonth || 0, selectedBudget.currency || 'USD')}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-slate-600 dark:text-slate-400">Utilization:</span>
                       <span className={`text-sm font-medium ${
-                        selectedBudget.utilization >= 100 ? 'text-red-600' :
-                        selectedBudget.utilization >= 80 ? 'text-yellow-600' : 'text-green-600'
+                        (selectedBudget.utilization || 0) >= 100 ? 'text-red-600' :
+                        (selectedBudget.utilization || 0) >= 80 ? 'text-yellow-600' : 'text-green-600'
                       }`}>
-                        {selectedBudget.utilization.toFixed(1)}%
+                        {(selectedBudget.utilization || 0).toFixed(1)}%
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-slate-600 dark:text-slate-400">Status:</span>
                       <Badge variant={selectedBudget.status === 'over_budget' ? 'destructive' : 
                                     selectedBudget.status === 'near_limit' ? 'secondary' : 'default'}>
-                        {selectedBudget.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        {(selectedBudget.status || 'unknown').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </Badge>
                     </div>
                   </div>
