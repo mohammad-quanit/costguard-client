@@ -110,10 +110,7 @@ export class BudgetService {
    */
   static async deleteBudget(budgetId: string): Promise<CreateBudgetResponse> {
     try {
-      const response = await apiClient.post<CreateBudgetResponse>('/budget/set', {
-        budgetId,
-        isActive: false
-      });
+      const response = await apiClient.delete<CreateBudgetResponse>(`/budget/${budgetId}`);
       return response;
     } catch (error) {
       console.error('BudgetService - Error deleting budget:', error);

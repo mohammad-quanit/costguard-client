@@ -53,6 +53,7 @@ const Budgets = () => {
     isLoading,
     isCreating,
     isUpdating,
+    isDeleting,
     error,
     createBudget,
     updateBudget,
@@ -107,14 +108,20 @@ const Budgets = () => {
   }, [createBudget, updateBudget]);
 
   const handleDeleteBudget = useCallback(async (budgetId: string) => {
-    if (window.confirm('Are you sure you want to delete this budget?')) {
+    const budget = appBudgets.find(b => b.budgetId === budgetId);
+    const budgetName = budget?.budgetName || 'this budget';
+    
+    if (window.confirm(`Are you sure you want to delete "${budgetName}"? This action cannot be undone.`)) {
       try {
         await deleteBudget(budgetId);
+        // Success feedback could be added here (toast notification, etc.)
       } catch (error) {
         console.error('Error deleting budget:', error);
+        // Error feedback could be added here (toast notification, etc.)
+        alert('Failed to delete budget. Please try again.');
       }
     }
-  }, [deleteBudget]);
+  }, [deleteBudget, appBudgets]);
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
@@ -213,6 +220,7 @@ const Budgets = () => {
           onCreateAppBudget={handleCreateBudget}
           onEditBudget={handleEditBudget}
           onDeleteAppBudget={handleDeleteBudget}
+          isDeleting={isDeleting}
         />
 
         {/* Budget Modal */}

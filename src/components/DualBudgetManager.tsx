@@ -12,7 +12,8 @@ import {
   AlertCircle,
   Info,
   TrendingUp,
-  Shield
+  Shield,
+  Loader2
 } from "lucide-react";
 
 interface AWSBudget {
@@ -81,6 +82,7 @@ interface DualBudgetManagerProps {
   onCreateAppBudget: () => void;
   onEditBudget: (budgetId: string, type: 'aws' | 'app') => void;
   onDeleteAppBudget: (budgetId: string) => void;
+  isDeleting?: boolean;
 }
 
 export const DualBudgetManager = ({
@@ -88,7 +90,8 @@ export const DualBudgetManager = ({
   appBudgets,
   onCreateAppBudget,
   onEditBudget,
-  onDeleteAppBudget
+  onDeleteAppBudget,
+  isDeleting = false
 }: DualBudgetManagerProps) => {
   const [activeTab, setActiveTab] = useState<'aws' | 'app'>('app');
 
@@ -361,9 +364,17 @@ export const DualBudgetManager = ({
                               variant="outline" 
                               size="sm" 
                               onClick={() => onDeleteAppBudget(budget.budgetId)}
-                              className="text-red-600 hover:text-red-700"
+                              disabled={isDeleting}
+                              className="text-red-600 hover:text-red-700 disabled:opacity-50"
                             >
-                              Delete
+                              {isDeleting ? (
+                                <>
+                                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                  Deleting...
+                                </>
+                              ) : (
+                                'Delete'
+                              )}
                             </Button>
                           </div>
                         </CardContent>
