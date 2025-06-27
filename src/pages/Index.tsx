@@ -290,7 +290,6 @@ const Index = () => {
               metrics={multiBudgetMetrics}
               budgetHistories={budgetHistories}
               onBudgetSelect={(budgetId) => {
-                console.log('Selected budget:', budgetId);
                 // Handle budget selection - could navigate to detailed view
               }}
             />

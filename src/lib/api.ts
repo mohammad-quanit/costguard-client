@@ -2,7 +2,7 @@
 // API Configuration
 const API_BASE_URL = import.meta.env.DEV
   ? '/api' // Use proxy in development
-  : 'https://dl6q0k9s90.execute-api.us-east-1.amazonaws.com/dev'; // Direct API in production
+  : 'https://xlr4wiih1g.execute-api.us-east-1.amazonaws.com/local'; // Direct API in production
 
 // API Client class for handling requests
 class ApiClient {
@@ -28,7 +28,6 @@ class ApiClient {
     };
 
     try {
-      console.log(`Making API request to: ${url}`);
       const response = await fetch(url, config);
       
       if (!response.ok) {
@@ -50,7 +49,6 @@ class ApiClient {
       }
       
       const data = await response.json();
-      console.log('API response received:', data);
       return data;
     } catch (error) {
       console.error(`API request failed for ${endpoint}:`, error);

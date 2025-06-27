@@ -18,10 +18,6 @@ export const HeaderNav = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
-  // Debug logging
-  console.log('HeaderNav - Rendering with user:', user);
-  console.log('HeaderNav - User firstName:', user?.firstName);
-
   const navItems = [
     { path: "/", label: "Dashboard", icon: DollarSign },
     { path: "/budgets", label: "Budgets", icon: Target },
@@ -39,10 +35,6 @@ export const HeaderNav = () => {
   };
 
   const getUserDisplayName = () => {
-    console.log('HeaderNav - User data:', user);
-    console.log('HeaderNav - User firstName:', user?.firstName);
-    console.log('HeaderNav - User lastName:', user?.lastName);
-    
     // Simple logic: show firstName if available, otherwise fallback
     if (user?.firstName) {
       return user.firstName;

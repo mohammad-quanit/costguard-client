@@ -14,18 +14,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log('ProtectedRoute - Auth state:', {
-      isAuthenticated,
-      isLoading,
-      hasUser: !!user,
-      currentPath: location.pathname,
-      error
-    });
   }, [isAuthenticated, isLoading, user, location.pathname, error]);
 
   // Show loading state while checking authentication
   if (isLoading) {
-    console.log('ProtectedRoute - Showing loading state');
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -51,12 +43,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated || !user) {
-    console.log('ProtectedRoute - User not authenticated, redirecting to login');
-    console.log('ProtectedRoute - Current location:', location.pathname);
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Render protected content
-  console.log('ProtectedRoute - User authenticated, rendering protected content');
   return <>{children}</>;
 };

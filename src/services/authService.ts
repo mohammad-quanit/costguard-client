@@ -15,14 +15,12 @@ export class AuthService {
   static async signUp(data: SignUpRequest): Promise<AuthResponse> {
     try {
       const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH_SIGNUP, data);
-      console.log('AuthService - Sign up response:', response);
       
       // Store tokens and user data using the new response structure
       if (response.tokens?.accessToken) {
         localStorage.setItem('authToken', response.tokens.accessToken);
         localStorage.setItem('refreshToken', response.tokens.refreshToken);
         localStorage.setItem('user', JSON.stringify(response.user));
-        console.log('AuthService - Sign up tokens stored successfully');
       } else {
         throw new Error('Invalid response: missing access token');
       }
@@ -40,14 +38,12 @@ export class AuthService {
   static async signIn(data: SignInRequest): Promise<AuthResponse> {
     try {
       const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH_SIGNIN, data);
-      console.log('AuthService - Raw API response:', response);
       
       // Store tokens and user data using the new response structure
       if (response.tokens?.accessToken) {
         localStorage.setItem('authToken', response.tokens.accessToken);
         localStorage.setItem('refreshToken', response.tokens.refreshToken);
         localStorage.setItem('user', JSON.stringify(response.user));
-        console.log('AuthService - Tokens and user data stored successfully');
       } else {
         throw new Error('Invalid response: missing access token');
       }
@@ -94,7 +90,6 @@ export class AuthService {
   static async getProfile(): Promise<User> {
     try {
       const response = await apiClient.get<{message: string; user: User}>(API_ENDPOINTS.AUTH_PROFILE);
-      console.log('AuthService - Profile response:', response);
       
       // Extract user from the response structure
       const userData = response.user;
@@ -113,7 +108,6 @@ export class AuthService {
    * Sign out user
    */
   static signOut(): void {
-    console.log('AuthService - Signing out user');
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
@@ -159,7 +153,6 @@ export class AuthService {
   static isTokenExpired(): boolean {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      console.log('AuthService - No token found');
       return true;
     }
 
@@ -168,12 +161,6 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Date.now() / 1000;
       const isExpired = payload.exp < currentTime;
-      
-      console.log('AuthService - Token expiration check:', {
-        currentTime,
-        tokenExp: payload.exp,
-        isExpired
-      });
       
       return isExpired;
     } catch (error) {

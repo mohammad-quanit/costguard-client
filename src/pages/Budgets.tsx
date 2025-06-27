@@ -20,8 +20,6 @@ const Budgets = () => {
 
   // Convert budget cards to AWS budget format - STABLE memoization
   const awsBudgets = useMemo(() => {
-    console.log('Budgets.tsx - Memoizing AWS budgets, budgetCards length:', budgetCards?.length || 0);
-    
     if (!Array.isArray(budgetCards) || budgetCards.length === 0) {
       return [];
     }
@@ -66,7 +64,6 @@ const Budgets = () => {
 
   // Manual refresh function for app budgets
   const handleRefresh = useCallback(async () => {
-    console.log('Budgets.tsx - Manual refresh triggered');
     setIsRefreshing(true);
     try {
       await fetchBudgets();
@@ -79,13 +76,11 @@ const Budgets = () => {
 
   // STABLE event handlers - memoized with proper dependencies
   const handleCreateBudget = useCallback(() => {
-    console.log('Budgets.tsx - handleCreateBudget called');
     setEditingBudget(null);
     setIsModalOpen(true);
   }, []);
 
   const handleEditBudget = useCallback((budgetId: string, type: 'aws' | 'app') => {
-    console.log('Budgets.tsx - handleEditBudget called:', budgetId, type);
     if (type === 'app') {
       const budget = appBudgets.find(b => b.budgetId === budgetId);
       if (budget) {
@@ -98,7 +93,6 @@ const Budgets = () => {
   }, [appBudgets]);
 
   const handleSaveBudget = useCallback(async (budgetData: CreateBudgetRequest | UpdateBudgetRequest) => {
-    console.log('Budgets.tsx - handleSaveBudget called');
     try {
       if ('budgetId' in budgetData) {
         await updateBudget(budgetData as UpdateBudgetRequest);
@@ -113,7 +107,6 @@ const Budgets = () => {
   }, [createBudget, updateBudget]);
 
   const handleDeleteBudget = useCallback(async (budgetId: string) => {
-    console.log('Budgets.tsx - handleDeleteBudget called:', budgetId);
     if (window.confirm('Are you sure you want to delete this budget?')) {
       try {
         await deleteBudget(budgetId);
@@ -124,27 +117,23 @@ const Budgets = () => {
   }, [deleteBudget]);
 
   const handleCloseModal = useCallback(() => {
-    console.log('Budgets.tsx - handleCloseModal called');
     setIsModalOpen(false);
     setEditingBudget(null);
   }, []);
 
-  // STABLE computed values - prevent function calls on every render
+  // Memoize computed values
   const totalBudgets = useMemo(() => {
     const total = getTotalBudgets();
-    console.log('Budgets.tsx - Computing totalBudgets:', total);
     return total;
   }, [getTotalBudgets]);
 
   const overBudgetCount = useMemo(() => {
     const count = getOverBudgetCount();
-    console.log('Budgets.tsx - Computing overBudgetCount:', count);
     return count;
   }, [getOverBudgetCount]);
 
   // Loading state
   if (isLoading || isCostDataLoading) {
-    console.log('Budgets.tsx - Rendering loading state');
     return (
       <Layout>
         <main className="container mx-auto px-4 py-8">
@@ -164,8 +153,6 @@ const Budgets = () => {
       </Layout>
     );
   }
-
-  console.log('Budgets.tsx - Rendering main content');
 
   return (
     <Layout>

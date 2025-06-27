@@ -67,10 +67,8 @@ export const useBudgets = (existingAWSBudgets: AWSBudget[] = []): UseBudgetsRetu
     setError(null);
     
     try {
-      console.log('useBudgets - Fetching app budgets...');
       const response = await BudgetService.getBudgets();
       setAppBudgets(response.budgets || []);
-      console.log('useBudgets - App budgets loaded:', response.budgets?.length || 0);
     } catch (err: any) {
       console.error('useBudgets - Error fetching budgets:', err);
       setError(err.message || 'Failed to fetch budgets');
@@ -85,12 +83,10 @@ export const useBudgets = (existingAWSBudgets: AWSBudget[] = []): UseBudgetsRetu
     setError(null);
     
     try {
-      console.log('useBudgets - Creating budget:', budgetData);
       const response = await BudgetService.createBudget(budgetData);
       
       // Add the new budget to the list
       setAppBudgets(prev => [...prev, response.budget]);
-      console.log('useBudgets - Budget created successfully');
     } catch (err: any) {
       console.error('useBudgets - Error creating budget:', err);
       setError(err.message || 'Failed to create budget');
@@ -106,7 +102,6 @@ export const useBudgets = (existingAWSBudgets: AWSBudget[] = []): UseBudgetsRetu
     setError(null);
     
     try {
-      console.log('useBudgets - Updating budget:', budgetData);
       const response = await BudgetService.updateBudget(budgetData);
       
       // Update the budget in the list
@@ -115,7 +110,6 @@ export const useBudgets = (existingAWSBudgets: AWSBudget[] = []): UseBudgetsRetu
           budget.budgetId === budgetData.budgetId ? response.budget : budget
         )
       );
-      console.log('useBudgets - Budget updated successfully');
     } catch (err: any) {
       console.error('useBudgets - Error updating budget:', err);
       setError(err.message || 'Failed to update budget');
@@ -131,12 +125,10 @@ export const useBudgets = (existingAWSBudgets: AWSBudget[] = []): UseBudgetsRetu
     setError(null);
     
     try {
-      console.log('useBudgets - Deleting budget:', budgetId);
       await BudgetService.deleteBudget(budgetId);
       
       // Remove the budget from the list
       setAppBudgets(prev => prev.filter(budget => budget.budgetId !== budgetId));
-      console.log('useBudgets - Budget deleted successfully');
     } catch (err: any) {
       console.error('useBudgets - Error deleting budget:', err);
       setError(err.message || 'Failed to delete budget');
@@ -178,7 +170,6 @@ export const useBudgets = (existingAWSBudgets: AWSBudget[] = []): UseBudgetsRetu
     const newIds = existingAWSBudgets.map(b => b.budgetId).sort().join(',');
     
     if (currentIds !== newIds) {
-      console.log('useBudgets - Updating AWS budgets');
       setAWSBudgets(existingAWSBudgets);
     }
   }, [existingAWSBudgets, awsBudgets]);

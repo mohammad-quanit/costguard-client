@@ -37,19 +37,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        console.log('Initializing auth...');
         const token = AuthService.getToken();
         const user = AuthService.getCurrentUser();
         
-        console.log('Token exists:', !!token);
-        console.log('User exists:', !!user);
-        
         if (token && user) {
-          console.log('User found in localStorage:', user);
-          
           // Check if token is expired
           if (AuthService.isTokenExpired()) {
-            console.log('Token is expired, attempting refresh...');
             try {
               await AuthService.refreshToken();
               const refreshedUser = AuthService.getCurrentUser();
@@ -64,7 +57,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 isLoading: false,
                 error: null,
               }));
-              console.log('Token refreshed successfully');
             } catch (error) {
               console.error('Token refresh failed:', error);
               AuthService.signOut();
@@ -79,7 +71,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               }));
             }
           } else {
-            console.log('Token is valid, setting authenticated state');
             setState(prev => ({
               ...prev,
               user,
@@ -92,21 +83,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             
             // Try to refresh user profile in background
             try {
-              console.log('AuthContext - Fetching updated user profile...');
               const updatedUser = await AuthService.getProfile();
-              console.log('AuthContext - Updated user profile:', updatedUser);
               setState(prev => ({
                 ...prev,
                 user: updatedUser,
               }));
-              console.log('AuthContext - User profile updated successfully');
             } catch (error) {
               console.warn('AuthContext - Failed to refresh user profile:', error);
               // Don't fail the auth if profile fetch fails
             }
           }
         } else {
-          console.log('No valid auth data found');
           setState(prev => ({
             ...prev,
             isLoading: false,
@@ -126,12 +113,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    console.log('AuthContext - Attempting sign in for:', email);
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
       const response = await AuthService.signIn({ email, password });
-      console.log('AuthContext - Sign in successful:', response);
       
       // Check the actual response structure from your API
       const hasValidTokens = response.tokens && response.tokens.accessToken;
@@ -159,7 +144,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         error: null,
       }));
       
-      console.log('AuthContext - Auth state updated, user is now authenticated');
     } catch (error: any) {
       console.error('AuthContext - Sign in failed:', error);
       setState(prev => ({
@@ -176,7 +160,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
-    console.log('AuthContext - Attempting sign up for:', email);
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
@@ -186,7 +169,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         firstName, 
         lastName 
       });
-      console.log('AuthContext - Sign up successful:', response);
       
       // Check the actual response structure from your API
       const hasValidTokens = response.tokens && response.tokens.accessToken;
@@ -212,7 +194,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         error: null,
       }));
       
-      console.log('AuthContext - Auth state updated after sign up');
     } catch (error: any) {
       console.error('AuthContext - Sign up failed:', error);
       setState(prev => ({
@@ -229,7 +210,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signOut = () => {
-    console.log('Signing out user');
     setState({
       user: null,
       token: null,
@@ -266,13 +246,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signOut,
     refreshToken,
   };
-
-  console.log('Auth context state:', {
-    isAuthenticated: state.isAuthenticated,
-    isLoading: state.isLoading,
-    hasUser: !!state.user,
-    hasToken: !!state.token
-  });
 
   return (
     <AuthContext.Provider value={value}>

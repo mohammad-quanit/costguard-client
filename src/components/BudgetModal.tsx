@@ -108,9 +108,9 @@ export const BudgetModal = ({
       newErrors.alertThreshold = 'Alert threshold must be between 1 and 100';
     }
 
-    if (formData.services.length === 0) {
-      newErrors.services = 'At least one AWS service must be selected';
-    }
+    // if (formData.services.length === 0) {
+    //   newErrors.services = 'At least one AWS service must be selected';
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -126,18 +126,20 @@ export const BudgetModal = ({
     try {
       if (budget) {
         // Update existing budget
-        await onSave({
+        const updateData = {
           ...formData,
           budgetId: budget.budgetId,
           isActive: budget.isActive
-        } as UpdateBudgetRequest);
+        } as UpdateBudgetRequest;
+        
+        await onSave(updateData);
       } else {
         // Create new budget
         await onSave(formData);
       }
       onClose();
     } catch (error) {
-      console.error('Error saving budget:', error);
+      console.error('BudgetModal - Error saving budget:', error);
     }
   };
 

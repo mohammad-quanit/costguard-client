@@ -71,9 +71,7 @@ export class BudgetService {
    */
   static async getBudgets(): Promise<BudgetResponse> {
     try {
-      console.log('BudgetService - Fetching budgets...');
       const response = await apiClient.get<BudgetResponse>('/budget');
-      console.log('BudgetService - Budgets fetched successfully:', response);
       return response;
     } catch (error) {
       console.error('BudgetService - Error fetching budgets:', error);
@@ -86,9 +84,7 @@ export class BudgetService {
    */
   static async createBudget(budgetData: CreateBudgetRequest): Promise<CreateBudgetResponse> {
     try {
-      console.log('BudgetService - Creating budget:', budgetData);
       const response = await apiClient.post<CreateBudgetResponse>('/budget/set', budgetData);
-      console.log('BudgetService - Budget created successfully:', response);
       return response;
     } catch (error) {
       console.error('BudgetService - Error creating budget:', error);
@@ -101,9 +97,7 @@ export class BudgetService {
    */
   static async updateBudget(budgetData: UpdateBudgetRequest): Promise<CreateBudgetResponse> {
     try {
-      console.log('BudgetService - Updating budget:', budgetData);
       const response = await apiClient.post<CreateBudgetResponse>('/budget/set', budgetData);
-      console.log('BudgetService - Budget updated successfully:', response);
       return response;
     } catch (error) {
       console.error('BudgetService - Error updating budget:', error);
@@ -116,12 +110,10 @@ export class BudgetService {
    */
   static async deleteBudget(budgetId: string): Promise<CreateBudgetResponse> {
     try {
-      console.log('BudgetService - Deleting budget:', budgetId);
       const response = await apiClient.post<CreateBudgetResponse>('/budget/set', {
         budgetId,
         isActive: false
       });
-      console.log('BudgetService - Budget deleted successfully:', response);
       return response;
     } catch (error) {
       console.error('BudgetService - Error deleting budget:', error);

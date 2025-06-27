@@ -27,9 +27,7 @@ const Login = () => {
 
   // Redirect if already authenticated
   useEffect(() => {
-    console.log('Login - Auth state check:', { isAuthenticated, hasUser: !!user });
     if (isAuthenticated && user) {
-      console.log('Login - User already authenticated, redirecting to:', from);
       // Small delay to ensure state is fully updated
       setTimeout(() => {
         navigate(from, { replace: true });
@@ -65,10 +63,8 @@ const Login = () => {
     setErrors({});
 
     try {
-      console.log('Login - Attempting sign in...');
       await signIn(formData.email, formData.password);
       
-      console.log('Login - Sign in successful, auth state will trigger redirect via useEffect');
       // DO NOT navigate here - let the useEffect handle the redirect
       
     } catch (error: any) {
