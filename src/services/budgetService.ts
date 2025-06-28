@@ -69,9 +69,10 @@ export class BudgetService {
   /**
    * Get all budgets for the authenticated user
    */
-  static async getBudgets(): Promise<BudgetResponse> {
+  static async getBudgets(accountId?: string): Promise<BudgetResponse> {
     try {
-      const response = await apiClient.get<BudgetResponse>('/budget');
+      const endpoint = accountId ? `/budget?accountId=${accountId}` : '/budget';
+      const response = await apiClient.get<BudgetResponse>(endpoint);
       return response;
     } catch (error) {
       console.error('BudgetService - Error fetching budgets:', error);

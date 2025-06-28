@@ -242,15 +242,15 @@ const mockApiResponse: CostUsageResponse = {
   }
 };
 
-export const useCostData = () => {
+export const useCostData = (accountId?: string) => {
   const {
     data: rawData,
     isLoading,
     error,
     refetch,
   } = useQuery<CostUsageResponse>({
-    queryKey: ['costUsage'],
-    queryFn: CostService.getCostUsage,
+    queryKey: ['costUsage', accountId],
+    queryFn: () => CostService.getCostUsage(accountId),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false, // Don't refetch when window gains focus
     refetchOnReconnect: false, // Don't refetch when network reconnects

@@ -13,11 +13,17 @@ import { MultiBudgetCard } from "@/components/MultiBudgetCard";
 import { ServiceBreakdown } from "@/components/ServiceBreakdown";
 import { HeaderNav } from "@/components/HeaderNav";
 import { DashboardCard } from "@/components/DashboardCard";
+import { AWSAccountSelector } from "@/components/AWSAccountSelector";
 import { useCostData } from "@/hooks/useCostData";
+import { useBudgetData } from "@/hooks/useBudgetData";
+import { useAWSAccountContext } from "@/contexts/AWSAccountContext";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("30d");
+  const { selectedAccount, accounts } = useAWSAccountContext();
+  
+  // Use account-specific data
   const { 
     dashboardMetrics, 
     chartData, 
@@ -32,7 +38,63 @@ const Index = () => {
     formatCurrency,
     getBudgetStatusColor,
     calculateBudgetPercentage 
-  } = useCostData();
+  } = useCostData(selectedAccount?.accountId);
+  
+  const { budgets, isLoading: budgetsLoading } = useBudgetData(selectedAccount?.accountId);
+
+  // No AWS accounts configured
+  if (accounts.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
+        <HeaderNav />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="mb-8">
+              <DollarSign className="h-16 w-16 mx-auto mb-4 text-blue-500" />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Welcome to CostGuard
+              </h1>
+              <p className="text-lg text-gray-600 dark:text-gray-300">
+                Your AWS cost monitoring dashboard
+              </p>
+            </div>
+            
+            <Card className="p-8">
+              <CardHeader>
+                <CardTitle className="text-xl mb-4">AWS Account Required</CardTitle>
+                <CardDescription className="text-base">
+                  To start monitoring your AWS costs, you need to add your AWS account credentials.
+                  Contact your administrator to configure AWS account access.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                    What you'll get once configured:
+                  </h3>
+                  <ul className="text-left text-blue-800 dark:text-blue-200 space-y-1">
+                    <li>• Real-time AWS cost monitoring</li>
+                    <li>• Budget tracking and alerts</li>
+                    <li>• Service-level cost breakdown</li>
+                    <li>• Historical cost analysis</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
+                  <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
+                    Need help?
+                  </h3>
+                  <p className="text-amber-800 dark:text-amber-200">
+                    Contact your system administrator to configure AWS account access and start monitoring your cloud costs.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   // Loading state
   if (isLoading) {
@@ -155,6 +217,13 @@ const Index = () => {
               Refresh
             </Button>
           </div>
+          
+          {/* AWS Account Selector - Only show if accounts exist */}
+          {accounts.length > 0 && (
+            <div className="mt-6 p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+              <AWSAccountSelector />
+            </div>
+          )}
         </div>
 
         {/* Dashboard Cards Row */}

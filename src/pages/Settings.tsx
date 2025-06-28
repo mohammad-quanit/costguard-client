@@ -9,14 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAWSAccounts } from "@/hooks/useAWSAccounts";
-import { AWSAccountSetup } from "@/components/AWSAccountSetup";
 import { 
   Palette, 
   User, 
   Save, 
   AlertTriangle,
   Cloud,
-  Plus,
   Trash2,
   Loader2,
   Settings as SettingsIcon
@@ -104,6 +102,7 @@ const Settings = () => {
       <AWSAccountSetup 
         onAccountAdded={handleAccountAdded}
         onSkip={() => setShowAddAccount(false)}
+        isRequired={false}
       />
     );
   }

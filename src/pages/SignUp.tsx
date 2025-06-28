@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DollarSign, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { AWSAccountModal } from "@/components/AWSAccountModal";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -21,9 +22,22 @@ const SignUp = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showAWSModal, setShowAWSModal] = useState(false);
 
   const { signUp } = useAuth();
   const navigate = useNavigate();
+
+  // Effect to show AWS modal after successful signup
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setShowAWSModal(true);
+        setIsLoading(false); // Make sure loading is stopped
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -80,10 +94,8 @@ const SignUp = () => {
       
       setSuccess(true);
       
-      // Redirect to AWS Account Setup after successful signup
-      setTimeout(() => {
-        navigate('/aws-account-setup');
-      }, 2000);
+      // Clear any existing errors
+      setErrors({});
       
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -93,6 +105,18 @@ const SignUp = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleAWSAccountSuccess = () => {
+    // Close modal and redirect to dashboard
+    setShowAWSModal(false);
+    navigate('/', { replace: true });
+  };
+
+  const handleAWSModalClose = () => {
+    // Allow user to skip AWS setup and go to dashboard
+    setShowAWSModal(false);
+    navigate('/', { replace: true });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,14 +147,24 @@ const SignUp = () => {
               Account Created Successfully!
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Welcome to CostGuard! Next, let's connect your AWS account to start monitoring costs.
+              Welcome to CostGuard! Next, you'll need to add your AWS account to start monitoring costs.
             </p>
             <div className="flex items-center justify-center">
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              <span className="text-sm text-slate-500 dark:text-slate-400">Redirecting to AWS setup...</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">Preparing AWS account setup...</span>
             </div>
           </CardContent>
         </Card>
+
+        {/* AWS Account Setup Modal - Include in success state */}
+        <AWSAccountModal
+          isOpen={showAWSModal}
+          onClose={handleAWSModalClose}
+          onSuccess={handleAWSAccountSuccess}
+          title="Complete Your Setup"
+          description="Add your AWS account to start monitoring your cloud costs. This step is required to access your dashboard."
+          isRequired={true}
+        />
       </div>
     );
   }

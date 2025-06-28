@@ -11,6 +11,8 @@ import { AWSAccountService, AWSAccountRequest } from '@/services/awsAccountServi
 interface AWSAccountSetupProps {
   onAccountAdded: () => void;
   onSkip?: () => void;
+  isRequired?: boolean; // New prop to indicate if account setup is mandatory
+  fromSignup?: boolean; // New prop to indicate if coming from signup
 }
 
 const AWS_REGIONS = [
@@ -26,7 +28,7 @@ const AWS_REGIONS = [
   { value: 'ap-northeast-1', label: 'Asia Pacific (Tokyo)' },
 ];
 
-export const AWSAccountSetup = ({ onAccountAdded, onSkip }: AWSAccountSetupProps) => {
+export const AWSAccountSetup = ({ onAccountAdded, onSkip, isRequired = false, fromSignup = false }: AWSAccountSetupProps) => {
   const [formData, setFormData] = useState<AWSAccountRequest>({
     accessKeyId: '',
     secretAccessKey: '',
@@ -71,15 +73,49 @@ export const AWSAccountSetup = ({ onAccountAdded, onSkip }: AWSAccountSetupProps
   const isFormValid = formData.accessKeyId && formData.secretAccessKey && formData.region && formData.accountAlias;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <Cloud className="h-6 w-6 text-blue-600" />
+          {fromSignup && (
+            <div className="mb-4">
+              <div className="flex items-center justify-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center">
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-2">
+                    <CheckCircle className="h-3 w-3 text-white" />
+                  </div>
+                  <span>Account Created</span>
+                </div>
+                <div className="w-8 h-px bg-slate-300 dark:bg-slate-600"></div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-2">
+                    <span className="text-xs text-white font-bold">2</span>
+                  </div>
+                  <span>Connect AWS</span>
+                </div>
+                <div className="w-8 h-px bg-slate-300 dark:bg-slate-600"></div>
+                <div className="flex items-center">
+                  <div className="w-6 h-6 bg-slate-300 dark:bg-slate-600 rounded-full flex items-center justify-center mr-2">
+                    <span className="text-xs text-slate-600 dark:text-slate-400 font-bold">3</span>
+                  </div>
+                  <span className="text-slate-400 dark:text-slate-500">Dashboard</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="mx-auto mb-4 w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+            <Cloud className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </div>
-          <CardTitle className="text-2xl font-bold">Connect Your AWS Account</CardTitle>
-          <CardDescription className="text-lg">
-            Add your AWS account to start monitoring costs and managing budgets
+          <CardTitle className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            {fromSignup ? 'Welcome to CostGuard!' : 'Connect Your AWS Account'}
+          </CardTitle>
+          <CardDescription className="text-lg text-slate-600 dark:text-slate-400">
+            {fromSignup 
+              ? "Great! Your account is ready. Now let's connect your AWS account to start monitoring your cloud costs."
+              : isRequired 
+                ? "To get started with CostGuard, you need to connect at least one AWS account for cost monitoring."
+                : "Add your AWS account to start monitoring costs and managing budgets"
+            }
           </CardDescription>
         </CardHeader>
 
@@ -94,9 +130,9 @@ export const AWSAccountSetup = ({ onAccountAdded, onSkip }: AWSAccountSetupProps
 
           {/* Success Message */}
           {success && (
-            <Alert className="border-green-200 bg-green-50 text-green-800 [&>svg]:text-green-600">
+            <Alert className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 [&>svg]:text-green-600 dark:[&>svg]:text-green-400">
               <CheckCircle className="h-4 w-4" />
-              <AlertDescription className="text-green-800">{success}</AlertDescription>
+              <AlertDescription className="text-green-800 dark:text-green-200">{success}</AlertDescription>
             </Alert>
           )}
 
@@ -120,7 +156,7 @@ export const AWSAccountSetup = ({ onAccountAdded, onSkip }: AWSAccountSetupProps
                 onChange={(e) => handleInputChange('accountAlias', e.target.value)}
                 required
               />
-              <p className="text-sm text-gray-600">A friendly name to identify this AWS account</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">A friendly name to identify this AWS account</p>
             </div>
 
             {/* Region */}
@@ -141,9 +177,9 @@ export const AWSAccountSetup = ({ onAccountAdded, onSkip }: AWSAccountSetupProps
             </div>
 
             {/* AWS Credentials Section */}
-            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <div className="space-y-4 p-4 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
               <div className="flex items-center justify-between">
-                <h3 className="font-medium">AWS Credentials</h3>
+                <h3 className="font-medium text-slate-900 dark:text-slate-100">AWS Credentials</h3>
                 <Button
                   type="button"
                   variant="outline"
@@ -210,7 +246,7 @@ export const AWSAccountSetup = ({ onAccountAdded, onSkip }: AWSAccountSetupProps
                 )}
               </Button>
               
-              {onSkip && (
+              {onSkip && !isRequired && (
                 <Button
                   type="button"
                   variant="outline"
@@ -224,9 +260,9 @@ export const AWSAccountSetup = ({ onAccountAdded, onSkip }: AWSAccountSetupProps
           </form>
 
           {/* Help Text */}
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-slate-600 dark:text-slate-400">
             <p>Need help setting up AWS credentials?</p>
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">
               View our setup guide
             </a>
           </div>

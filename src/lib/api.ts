@@ -2,7 +2,7 @@
 // API Configuration
 const API_BASE_URL = import.meta.env.DEV
   ? '/api' // Use proxy in development
-  : 'https://uvg5ue10ai.execute-api.us-east-1.amazonaws.com/dev'; // Direct API in production
+  : 'https://6glk0hluf8.execute-api.us-east-1.amazonaws.com/dev'; // Direct API in production
 
 // API Client class for handling requests
 class ApiClient {
@@ -16,7 +16,10 @@ class ApiClient {
     const url = `${this.baseURL}${endpoint}`;
     
     // Get token from localStorage for authenticated requests
-    const token = localStorage.getItem('authToken');
+    // But don't send token for public auth endpoints
+    const publicAuthEndpoints = ['/auth/signup', '/auth/signin', '/auth/forgot-password'];
+    const isPublicAuthEndpoint = publicAuthEndpoints.some(publicEndpoint => endpoint.includes(publicEndpoint));
+    const token = !isPublicAuthEndpoint ? localStorage.getItem('authToken') : null;
     
     const config: RequestInit = {
       headers: {
@@ -34,18 +37,27 @@ class ApiClient {
         const errorText = await response.text();
         console.error(`HTTP error! status: ${response.status}, body: ${errorText}`);
         
-        // Handle 401 Unauthorized - token might be expired
+        // Handle 401 Unauthorized - but don't auto-redirect for AWS account endpoints
         if (response.status === 401) {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('user');
-          // Redirect to login if not already there
-          if (!window.location.pathname.includes('/login')) {
-            window.location.href = '/login';
+          const isAWSAccountEndpoint = endpoint.includes('/aws-accounts');
+          
+          if (!isAWSAccountEndpoint) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            // Redirect to login if not already there
+            if (!window.location.pathname.includes('/login')) {
+              window.location.href = '/login';
+            }
           }
         }
         
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Create error object with status for better error handling
+        const error = new Error(`HTTP error! status: ${response.status}`);
+        (error as any).status = response.status;
+        (error as any).statusText = response.statusText;
+        (error as any).responseText = errorText;
+        throw error;
       }
       
       const data = await response.json();

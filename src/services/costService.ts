@@ -5,8 +5,11 @@ export class CostService {
   /**
    * Fetch cost usage data from the API
    */
-  static async getCostUsage(): Promise<CostUsageResponse> {
-    return apiClient.get<CostUsageResponse>(API_ENDPOINTS.COST_USAGE);
+  static async getCostUsage(accountId?: string): Promise<CostUsageResponse> {
+    const endpoint = accountId 
+      ? `${API_ENDPOINTS.COST_USAGE}?accountId=${accountId}`
+      : API_ENDPOINTS.COST_USAGE;
+    return apiClient.get<CostUsageResponse>(endpoint);
   }
 
   /**

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AuthState, User } from '@/types/auth';
 import { AuthService } from '@/services/authService';
+import { isPublicRoutePath } from '@/hooks/usePublicRoute';
 
 interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<void>;
@@ -37,6 +38,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Check if we're on a public route by looking at the current URL
+        const currentPath = window.location.pathname;
+        const isPublicRoute = isPublicRoutePath(currentPath);
+        
+        // For public routes, just set loading to false quickly
+        if (isPublicRoute) {
+          // Clear any stale auth state for public routes
+          setState(prev => ({
+            ...prev,
+            user: null,
+            token: null,
+            refreshToken: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          }));
+          return;
+        }
+
         const token = AuthService.getToken();
         const user = AuthService.getCurrentUser();
         
@@ -81,28 +101,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               error: null,
             }));
             
-            // Try to refresh user profile in background
-            try {
-              const updatedUser = await AuthService.getProfile();
-              setState(prev => ({
-                ...prev,
-                user: updatedUser,
-              }));
-            } catch (error) {
-              console.warn('AuthContext - Failed to refresh user profile:', error);
-              // Don't fail the auth if profile fetch fails
+            // Only refresh user profile if we have a valid, non-expired token
+            // and the user data looks valid, and we're not on a public route
+            const currentPath = window.location.pathname;
+            const isPublicRoute = isPublicRoutePath(currentPath);
+            
+            if (token && !AuthService.isTokenExpired() && user?.userId && !isPublicRoute) {
+              try {
+                const updatedUser = await AuthService.getProfile();
+                setState(prev => ({
+                  ...prev,
+                  user: updatedUser,
+                }));
+              } catch (error) {
+                console.warn('AuthContext - Failed to refresh user profile:', error);
+                // Don't fail the auth if profile fetch fails
+                // But if it's a 401/403, the token might be invalid
+                if (error.response?.status === 401 || error.response?.status === 403) {
+                  console.log('AuthContext - Token appears invalid, signing out');
+                  AuthService.signOut();
+                  setState(prev => ({
+                    ...prev,
+                    user: null,
+                    token: null,
+                    refreshToken: null,
+                    isAuthenticated: false,
+                    error: null,
+                  }));
+                }
+              }
             }
           }
         } else {
+          // No token or user data found - user is not authenticated
           setState(prev => ({
             ...prev,
+            user: null,
+            token: null,
+            refreshToken: null,
+            isAuthenticated: false,
             isLoading: false,
+            error: null,
           }));
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
         setState(prev => ({
           ...prev,
+          user: null,
+          token: null,
+          refreshToken: null,
+          isAuthenticated: false,
           isLoading: false,
           error: 'Failed to initialize authentication',
         }));
@@ -110,7 +159,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
-  }, []);
+  }, []); // Remove isPublicRoute dependency
 
   const signIn = async (email: string, password: string) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -170,29 +219,72 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         lastName 
       });
       
-      // Check the actual response structure from your API
-      const hasValidTokens = response.tokens && response.tokens.accessToken;
-      const hasValidUser = response.user && (response.user.userId || response.user.email);
+      console.log('AuthContext - Signup response:', {
+        hasTokens: !!response.tokens,
+        hasUser: !!response.user,
+        hasSuccess: !!response.success,
+        message: response.message
+      });
       
-      if (!hasValidTokens || !hasValidUser) {
-        console.error('AuthContext - Invalid signup response structure:', {
-          hasTokens: !!response.tokens,
-          hasAccessToken: !!(response.tokens && response.tokens.accessToken),
-          hasUser: !!response.user,
-          actualResponse: response
-        });
-        throw new Error('Invalid response from server - missing token or user data');
+      // Handle different signup response patterns
+      if (response.tokens?.accessToken && response.user) {
+        // Case 1: Signup with auto-login (tokens provided)
+        setState(prev => ({
+          ...prev,
+          user: response.user,
+          token: response.tokens.accessToken,
+          refreshToken: response.tokens.refreshToken,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        }));
+      } else if (response.user || response.success || response.message) {
+        // Case 2: Signup without auto-login - automatically sign in the user
+        console.log('AuthContext - Account created successfully, signing in automatically');
+        
+        try {
+          // Automatically sign in the user after successful signup
+          const signInResponse = await AuthService.signIn({ email, password });
+          
+          if (signInResponse.tokens?.accessToken && signInResponse.user) {
+            setState(prev => ({
+              ...prev,
+              user: signInResponse.user,
+              token: signInResponse.tokens.accessToken,
+              refreshToken: signInResponse.tokens.refreshToken,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            }));
+          } else {
+            // If auto-signin fails, still mark signup as successful but not authenticated
+            setState(prev => ({
+              ...prev,
+              isAuthenticated: false,
+              isLoading: false,
+              user: null,
+              token: null,
+              refreshToken: null,
+              error: null,
+            }));
+          }
+        } catch (signInError) {
+          console.error('AuthContext - Auto sign-in after signup failed:', signInError);
+          // Signup was successful but auto sign-in failed
+          setState(prev => ({
+            ...prev,
+            isAuthenticated: false,
+            isLoading: false,
+            user: null,
+            token: null,
+            refreshToken: null,
+            error: null,
+          }));
+        }
+      } else {
+        // Case 3: Invalid response
+        throw new Error('Invalid signup response: missing user data or success confirmation');
       }
-      
-      setState(prev => ({
-        ...prev,
-        user: response.user,
-        token: response.tokens.accessToken,
-        refreshToken: response.tokens.refreshToken,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      }));
       
     } catch (error: any) {
       console.error('AuthContext - Sign up failed:', error);

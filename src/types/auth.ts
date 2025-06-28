@@ -53,9 +53,10 @@ export interface User {
 
 export interface AuthResponse {
   message: string;
-  tokens: Tokens;
-  user: User;
-  cognitoTokens: CognitoTokens;
+  tokens?: Tokens; // Optional for signup responses
+  user?: User; // Optional for some responses
+  cognitoTokens?: CognitoTokens; // Optional
+  success?: boolean; // For signup responses that don't return tokens
 }
 
 export interface RefreshTokenRequest {

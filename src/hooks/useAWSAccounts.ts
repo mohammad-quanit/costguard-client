@@ -13,7 +13,7 @@ interface UseAWSAccountsReturn {
   hasAccounts: boolean;
 }
 
-export const useAWSAccounts = (): UseAWSAccountsReturn => {
+export const useAWSAccounts = (enabled: boolean = true): UseAWSAccountsReturn => {
   const [accounts, setAccounts] = useState<AWSAccount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -85,8 +85,12 @@ export const useAWSAccounts = (): UseAWSAccountsReturn => {
   }, [fetchAccounts]);
 
   useEffect(() => {
-    fetchAccounts();
-  }, [fetchAccounts]);
+    if (enabled) {
+      fetchAccounts();
+    } else {
+      setIsLoading(false);
+    }
+  }, [fetchAccounts, enabled]);
 
   return {
     accounts,

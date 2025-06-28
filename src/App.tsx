@@ -6,11 +6,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AWSAccountProvider } from "@/contexts/AWSAccountContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import AWSAccountSetup from "./pages/AWSAccountSetup";
 import AlertSettings from "./pages/AlertSettings";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
@@ -29,23 +29,17 @@ const App = () => (
       disableTransitionOnChange
     >
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              
-              {/* AWS Account Setup - Protected but special flow */}
-              <Route path="/aws-account-setup" element={
-                <ProtectedRoute>
-                  <AWSAccountSetup />
-                </ProtectedRoute>
-              } />
-              
-              {/* Protected routes */}
+        <AWSAccountProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                
+                {/* Protected routes */}
               <Route path="/" element={
                 <ProtectedRoute>
                   <Index />
@@ -84,7 +78,8 @@ const App = () => (
             {/* <AuthDebug /> */}
           </BrowserRouter>
         </TooltipProvider>
-      </AuthProvider>
+      </AWSAccountProvider>
+    </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
