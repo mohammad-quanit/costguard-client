@@ -24,16 +24,56 @@ CostGuard is a modern, responsive web application that helps AWS users monitor t
 - **📱 Responsive Design**: Works seamlessly on all devices
 - **⚡ Fast Performance**: Optimized with caching and lazy loading
 
+## ☁️ AWS Services Used
+
+### **Core AWS Services**
+- **AWS Lambda** - Serverless backend compute functions for API processing
+- **AWS API Gateway** - RESTful API endpoints for frontend-backend communication
+- **AWS Cost Explorer API** - Real-time cost data retrieval and analysis
+- **AWS Budgets API** - Budget management, tracking, and alerting
+- **AWS IAM** - User permissions and access control for secure API access
+- **AWS DynamoDB** - User account and preference storage (likely)
+
+### **Required AWS Permissions**
+Your AWS account needs the following IAM permissions:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ce:GetCostAndUsage",
+        "ce:GetUsageReport",
+        "budgets:ViewBudget",
+        "budgets:ModifyBudget",
+        "iam:GetUser"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+### **Supported AWS Regions**
+- `us-east-1` (N. Virginia)
+- `us-west-2` (Oregon)
+- `eu-west-1` (Ireland)
+- `ap-southeast-1` (Singapore)
+- All standard AWS regions
+
 ## 🛠 Technology Stack
 
 ### Frontend
-- **React 18** - Modern React with hooks
-- **TypeScript** - Type-safe development
-- **Vite** - Fast build tool and dev server
+- **React 18** - Modern React with hooks and functional components
+- **TypeScript** - Type-safe development throughout
+- **Vite** - Fast build tool and development server
 - **Tailwind CSS** - Utility-first CSS framework
 - **shadcn/ui** - Beautiful, accessible UI components
 - **Recharts** - Interactive data visualization
-- **React Query** - Server state management with caching
+- **React Query (TanStack Query)** - Server state management with caching
+- **React Router DOM** - Client-side routing and navigation
+- **Lucide React** - Modern icon library
 
 ### Backend Integration
 - **AWS Lambda** - Serverless compute functions
@@ -42,17 +82,30 @@ CostGuard is a modern, responsive web application that helps AWS users monitor t
 - **AWS Budgets API** - Budget management
 
 ### Development Tools
-- **ESLint** - Code linting
-- **PostCSS** - CSS processing
+- **ESLint** - Code linting and quality enforcement
+- **PostCSS** - CSS processing and optimization
+- **TypeScript Compiler** - Type checking and compilation
 
 ## 📋 Prerequisites
 
 Before setting up the project, ensure you have:
 
 - **Node.js** (v18 or higher) - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-- **npm** or **yarn** package manager
-- **Git** for version control
-- **AWS Account** (for backend API access)
+- **pnpm** - Fast, disk space efficient package manager
+- **Git** - Version control
+- **AWS Account** - With appropriate permissions for Cost Explorer and Budgets APIs
+
+### Install pnpm
+```bash
+# Install pnpm globally
+npm install -g pnpm
+
+# Or using curl (recommended)
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+# Verify installation
+pnpm --version
+```
 
 ## 🚀 Getting Started
 
@@ -66,36 +119,63 @@ cd costguard-client
 ### 2. Install Dependencies
 
 ```bash
-# Using npm
-npm install
+# Using pnpm (recommended)
+pnpm install
 
-# Or using yarn
+# Alternative package managers
+npm install
+# or
 yarn install
 ```
 
 ### 3. Environment Setup
 
-The application is configured to work with AWS Lambda backend APIs. Configure your API endpoints in the environment configuration:
+Create environment configuration for your AWS backend:
 
+```bash
+# Create environment file (optional)
+cp .env.example .env.local
+```
+
+Configure your AWS settings:
 - **Development**: Uses Vite proxy to handle CORS
 - **Production**: Direct API calls to your AWS Lambda endpoints
 
-### 4. Start Development Server
+### 4. AWS Account Configuration
+
+The application requires AWS account setup with proper credentials:
+
+1. **AWS Access Keys**: You'll need Access Key ID and Secret Access Key
+2. **IAM Permissions**: Ensure your AWS user has the required permissions listed above
+3. **Account Alias**: A friendly name for your AWS account
+4. **Region**: Your preferred AWS region
+
+### 5. Start Development Server
 
 ```bash
+# Using pnpm
+pnpm dev
+
+# Alternative commands
 npm run dev
+# or
+yarn dev
 ```
 
 The application will be available at: `http://localhost:8080`
 
-### 5. API Integration
+### 6. Backend API Setup
 
-Configure your AWS Lambda function endpoints in the application configuration files.
+Configure your AWS Lambda function endpoints. The application expects these API endpoints:
 
 **Required Endpoints:**
-- Cost and usage data retrieval
-- Budget management
-- Alert configuration
+```
+POST /aws/validate-account  - Validate AWS credentials
+GET  /aws/accounts         - Retrieve connected AWS accounts
+GET  /aws/cost-usage       - Get cost and usage data
+GET  /aws/budgets          - Retrieve budget information
+POST /aws/budgets          - Create/update budgets
+```
 
 ## 🏗 Project Structure
 
@@ -106,6 +186,8 @@ costguard-client/
 │   │   ├── ui/             # shadcn/ui components
 │   │   ├── CostChart.tsx   # Cost visualization charts
 │   │   ├── DashboardCard.tsx # Metric display cards
+│   │   ├── AWSAccountSelector.tsx # Account selection dropdown
+│   │   ├── HeaderNav.tsx   # Navigation header
 │   │   └── ...
 │   ├── pages/              # Application pages
 │   │   ├── Index.tsx       # Main dashboard
@@ -113,9 +195,17 @@ costguard-client/
 │   │   ├── Settings.tsx    # App preferences
 │   │   └── ...
 │   ├── hooks/              # Custom React hooks
-│   │   └── useCostData.ts  # Cost data fetching hook
+│   │   ├── useCostData.ts  # Cost data fetching hook
+│   │   ├── useAWSAccounts.ts # AWS account management
+│   │   └── ...
+│   ├── contexts/           # React Context providers
+│   │   ├── AuthContext.tsx # Authentication state
+│   │   ├── AWSAccountContext.tsx # AWS account state
+│   │   └── ...
 │   ├── services/           # API service layer
-│   │   └── costService.ts  # Cost data transformation
+│   │   ├── costService.ts  # Cost data transformation
+│   │   ├── awsAccountService.ts # AWS account operations
+│   │   └── ...
 │   ├── lib/                # Utility libraries
 │   │   └── api.ts          # HTTP client configuration
 │   ├── types/              # TypeScript type definitions
@@ -166,6 +256,7 @@ The application automatically detects the environment:
 ### Settings
 - **Theme Management**: Switch between light and dark modes
 - **User Preferences**: Customize dashboard layout and data refresh intervals
+- **AWS Account Management**: Add, remove, and configure AWS accounts
 
 ## 🚀 Deployment
 
@@ -175,17 +266,36 @@ For production deployment:
 
 ```bash
 # Build the application
-npm run build
+pnpm build
 
 # The dist/ folder contains the production build
 # Deploy to your preferred hosting platform (Vercel, Netlify, AWS S3, etc.)
+```
+
+### Build Commands
+
+```bash
+# Development server
+pnpm dev
+
+# Production build
+pnpm build
+
+# Preview production build
+pnpm preview
+
+# Type checking
+pnpm type-check
+
+# Linting
+pnpm lint
 ```
 
 ## 🧪 Testing
 
 ### Manual Testing
 
-1. **Start the development server**: `npm run dev`
+1. **Start the development server**: `pnpm dev`
 2. **Open browser**: Navigate to `http://localhost:8080`
 3. **Test API integration**: Check browser network tab for successful API calls
 4. **Test features**: Navigate through dashboard, settings, and alert configuration
@@ -204,7 +314,7 @@ curl -X GET "http://localhost:8080/api/cost-usage"
 ### Local Development
 
 1. **Make changes** in your preferred IDE
-2. **Test locally** with `npm run dev`
+2. **Test locally** with `pnpm dev`
 3. **Commit and push** changes
 
 ### GitHub Codespaces
@@ -218,7 +328,7 @@ curl -X GET "http://localhost:8080/api/cost-usage"
 ### Common Issues
 
 **CORS Errors**
-- Ensure the development server is running (`npm run dev`)
+- Ensure the development server is running (`pnpm dev`)
 - Check that the Vite proxy configuration is correct
 - Verify the API endpoint is accessible
 
@@ -228,8 +338,12 @@ curl -X GET "http://localhost:8080/api/cost-usage"
 - Use the "Retry API" button in the error banner
 
 **Build Issues**
-- Clear node_modules: `rm -rf node_modules && npm install`
-- Clear Vite cache: `npx vite --force`
+- Clear node_modules: `rm -rf node_modules && pnpm install`
+- Clear Vite cache: `pnpm exec vite --force`
+
+**pnpm Issues**
+- Update pnpm: `pnpm add -g pnpm@latest`
+- Clear pnpm cache: `pnpm store prune`
 
 ## 📈 Performance Optimization
 
@@ -247,6 +361,7 @@ The application includes several performance optimizations:
 - **CORS Handling**: Proper CORS configuration for cross-origin requests
 - **Error Handling**: Sensitive information not exposed in error messages
 - **Type Safety**: TypeScript ensures type safety throughout the application
+- **AWS Credentials**: Never store AWS credentials in frontend code
 
 ## 🤝 Contributing
 
