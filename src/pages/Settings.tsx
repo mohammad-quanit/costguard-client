@@ -17,6 +17,7 @@ import {
   Cloud,
   Trash2,
   Loader2,
+  Plus,
   Settings as SettingsIcon
 } from "lucide-react";
 import { Layout } from "@/components/Layout";
@@ -86,11 +87,11 @@ const Settings = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>;
+        return <Badge className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">Active</Badge>;
       case 'validating':
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Validating</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800">Validating</Badge>;
       case 'inactive':
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Inactive</Badge>;
+        return <Badge className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800">Inactive</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -109,7 +110,7 @@ const Settings = () => {
 
   return (
     <Layout>
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 min-h-screen">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Settings</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-2">
@@ -118,8 +119,8 @@ const Settings = () => {
         </div>
 
         {saveSuccess && (
-          <Alert className="mb-6 border-green-200 bg-green-50 dark:bg-green-900/20">
-            <AlertTriangle className="h-4 w-4 text-green-600" />
+          <Alert className="mb-6 border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800">
+            <AlertTriangle className="h-4 w-4 text-green-600 dark:text-green-400" />
             <AlertDescription className="text-green-800 dark:text-green-200">
               Settings saved successfully!
             </AlertDescription>
@@ -176,7 +177,7 @@ const Settings = () => {
                   onChange={(e) => setUserPreferences(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="john.doe@example.com"
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   This email will be used for all notifications and alerts
                 </p>
               </div>
@@ -268,7 +269,7 @@ const Settings = () => {
 
               {/* Add Account Button */}
               <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   {accounts.length === 0 
                     ? "No AWS accounts connected. Add your first account to start monitoring costs."
                     : `${accounts.length} AWS account${accounts.length > 1 ? 's' : ''} connected`
@@ -283,24 +284,24 @@ const Settings = () => {
               {/* Accounts List */}
               {accountsLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-                  <span className="ml-2 text-gray-600">Loading AWS accounts...</span>
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-400 dark:text-gray-500" />
+                  <span className="ml-2 text-gray-600 dark:text-gray-300">Loading AWS accounts...</span>
                 </div>
               ) : accounts.length > 0 ? (
                 <div className="space-y-3">
                   {accounts.map((account) => (
-                    <div key={account.accountId} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                    <div key={account.accountId} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium">{account.accountAlias}</h4>
+                          <h4 className="font-medium text-gray-900 dark:text-gray-100">{account.accountAlias}</h4>
                           {getStatusBadge(account.status)}
                         </div>
-                        <div className="text-sm text-gray-600">
-                          <span>Account ID: {account.accountId}</span>
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                          <span>AWS Account ID: {account.awsAccountId}</span>
                           <span className="mx-2">•</span>
                           <span>Region: {account.region}</span>
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           Added: {new Date(account.createdAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -326,8 +327,8 @@ const Settings = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Cloud className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  <Cloud className="h-8 w-8 mx-auto mb-2 text-gray-400 dark:text-gray-500" />
                   <p>No AWS accounts connected</p>
                 </div>
               )}

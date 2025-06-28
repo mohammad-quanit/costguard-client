@@ -17,6 +17,7 @@ export interface AWSAccountResponse {
 
 export interface AWSAccount {
   accountId: string;
+  awsAccountId: string; // The actual AWS account ID (12-digit number)
   accountAlias: string;
   region: string;
   status: 'active' | 'inactive' | 'validating';
@@ -57,6 +58,12 @@ export class AWSAccountService {
       } else {
         accounts = [];
       }
+      
+      // Ensure awsAccountId is available (fallback to accountId if not provided by API)
+      accounts = accounts.map(account => ({
+        ...account,
+        awsAccountId: account.awsAccountId || account.accountId || 'Unknown'
+      }));
       
       return accounts;
     } catch (error) {

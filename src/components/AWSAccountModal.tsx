@@ -79,21 +79,46 @@ export const AWSAccountModal: React.FC<AWSAccountModalProps> = ({
     try {
       const response = await AWSAccountService.validateAndAddAccount(formData);
       
-      if (response.success) {
-        setSuccess(`AWS account "${formData.accountAlias}" validated and added successfully!`);
+      console.log('AWS Account validation response:', response);
+      
+      // Check for success in multiple possible response formats
+      const isSuccess = response.success || response.status === 'success' || response.message?.includes('success');
+      
+      if (isSuccess) {
+        console.log('Validation successful, setting success state');
+        const successMessage = response.message || `AWS account "${formData.accountAlias}" validated and added successfully!`;
+        setSuccess(successMessage);
+        setError(null); // Make sure error is cleared
         
         // Wait a moment to show success message, then redirect to dashboard
         setTimeout(() => {
+          console.log('Success timeout reached, calling onSuccess');
           onSuccess();
-        }, 1500);
+        }, 20000);
       } else {
+        console.log('Validation failed, response:', response);
         // Validation failed - show error message and keep modal open
-        setError(response.message || 'AWS account validation failed. Please check your credentials and try again.');
+        setError(response.message || response.error || 'AWS account validation failed. Please check your credentials and try again.');
       }
     } catch (err: any) {
       console.error('AWS Account validation error:', err);
       
-      // Validation failed - show specific error message and keep modal open
+      // Check if this might actually be a success response in disguise
+      const errorMessage = err.message || err.responseText || '';
+      if (errorMessage.includes('successfully') || errorMessage.includes('validated and stored')) {
+        console.log('Error message contains success indicators, treating as success');
+        setSuccess(errorMessage);
+        setError(null);
+        
+        // Wait a moment to show success message, then redirect to dashboard
+        setTimeout(() => {
+          console.log('Success timeout reached (from error), calling onSuccess');
+          onSuccess();
+        }, 1500);
+        return;
+      }
+      
+      // Handle actual errors
       if (err.status === 401) {
         setError('Authentication failed. Your session may have expired. Please refresh the page and try again.');
       } else if (err.status === 403) {
@@ -141,22 +166,28 @@ export const AWSAccountModal: React.FC<AWSAccountModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        {success ? (
+        {success && !error ? (
           <div className="py-8 text-center">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">
               AWS Account Validated Successfully!
             </h3>
-            <p className="text-green-600 dark:text-green-300 mb-2">
+            <p className="text-green-600 dark:text-green-300 mb-4">
               {success}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mb-4">
               Redirecting to your dashboard...
             </p>
+            <Button 
+              onClick={onSuccess}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Go to Dashboard Now
+            </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
+            {error && !success && (
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
@@ -181,6 +212,15 @@ export const AWSAccountModal: React.FC<AWSAccountModalProps> = ({
                       </div>
                     </details>
                   )}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {success && !error && (
+              <Alert className="border-green-200 bg-green-50 dark:bg-green-900/20">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800 dark:text-green-200">
+                  {success}
                 </AlertDescription>
               </Alert>
             )}

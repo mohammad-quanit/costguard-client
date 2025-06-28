@@ -8,7 +8,7 @@ export const AWSAccountSelector = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
         <Loader2 className="h-4 w-4 animate-spin" />
         Loading accounts...
       </div>
@@ -17,7 +17,7 @@ export const AWSAccountSelector = () => {
 
   if (accounts.length === 0) {
     return (
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
         <Cloud className="h-4 w-4" />
         No AWS accounts connected
       </div>
@@ -27,11 +27,11 @@ export const AWSAccountSelector = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">Active</Badge>;
+        return <Badge className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800 text-xs">Active</Badge>;
       case 'validating':
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 text-xs">Validating</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800 text-xs">Validating</Badge>;
       case 'inactive':
-        return <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">Inactive</Badge>;
+        return <Badge className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 text-xs">Inactive</Badge>;
       default:
         return <Badge variant="secondary" className="text-xs">{status}</Badge>;
     }
@@ -39,7 +39,7 @@ export const AWSAccountSelector = () => {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
         <Cloud className="h-4 w-4" />
         AWS Account:
       </div>
@@ -69,8 +69,8 @@ export const AWSAccountSelector = () => {
               <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col">
                   <span className="font-medium">{account.accountAlias}</span>
-                  <span className="text-xs text-gray-500">
-                    {account.accountId} • {account.region}
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {account.awsAccountId} • {account.region}
                   </span>
                 </div>
                 <div className="ml-2">

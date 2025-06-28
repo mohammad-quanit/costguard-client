@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, Settings, DollarSign, History, AlertTriangle, User, LogOut, Target } from "lucide-react";
+import { Bell, DollarSign, History, User, LogOut, Target, AlertTriangle } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,7 +23,6 @@ export const HeaderNav = () => {
     { path: "/budgets", label: "Budgets", icon: Target },
     { path: "/alerts", label: "Alert Settings", icon: AlertTriangle },
     { path: "/history", label: "History", icon: History },
-    { path: "/settings", label: "Settings", icon: Settings },
   ];
 
   const handleSignOut = () => {
@@ -142,12 +141,6 @@ export const HeaderNav = () => {
                   <Link to="/settings" className="flex items-center">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/alerts" className="flex items-center">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Alert Settings</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

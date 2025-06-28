@@ -109,6 +109,7 @@ const SignUp = () => {
 
   const handleAWSAccountSuccess = () => {
     // Close modal and redirect to dashboard
+    console.log('handleAWSAccountSuccess called - redirecting to dashboard');
     setShowAWSModal(false);
     navigate('/', { replace: true });
   };
