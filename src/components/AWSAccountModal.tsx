@@ -79,24 +79,20 @@ export const AWSAccountModal: React.FC<AWSAccountModalProps> = ({
     try {
       const response = await AWSAccountService.validateAndAddAccount(formData);
       
-      console.log('AWS Account validation response:', response);
-      
       // Check for success in multiple possible response formats
       const isSuccess = response.success || response.status === 'success' || response.message?.includes('success');
       
       if (isSuccess) {
-        console.log('Validation successful, setting success state');
+        // Validation successful, setting success state
         const successMessage = response.message || `AWS account "${formData.accountAlias}" validated and added successfully!`;
         setSuccess(successMessage);
         setError(null); // Make sure error is cleared
         
         // Wait a moment to show success message, then redirect to dashboard
         setTimeout(() => {
-          console.log('Success timeout reached, calling onSuccess');
           onSuccess();
         }, 20000);
       } else {
-        console.log('Validation failed, response:', response);
         // Validation failed - show error message and keep modal open
         setError(response.message || response.error || 'AWS account validation failed. Please check your credentials and try again.');
       }
@@ -106,13 +102,12 @@ export const AWSAccountModal: React.FC<AWSAccountModalProps> = ({
       // Check if this might actually be a success response in disguise
       const errorMessage = err.message || err.responseText || '';
       if (errorMessage.includes('successfully') || errorMessage.includes('validated and stored')) {
-        console.log('Error message contains success indicators, treating as success');
+        // Error message contains success indicators, treating as success
         setSuccess(errorMessage);
         setError(null);
         
         // Wait a moment to show success message, then redirect to dashboard
         setTimeout(() => {
-          console.log('Success timeout reached (from error), calling onSuccess');
           onSuccess();
         }, 1500);
         return;

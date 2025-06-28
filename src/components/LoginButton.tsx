@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export const LoginButton = () => {
   const handleFederatedLogin = () => {
-    console.log("Initiating federated login with Cognito");
+    // Initiating federated login with Cognito
     // In a real app, this would redirect to AWS Cognito
   };
 

@@ -12,12 +12,7 @@ export const NotificationToggle = () => {
   const [slackWebhook, setSlackWebhook] = useState("");
 
   const handleSave = () => {
-    console.log("Saving notification settings:", {
-      emailEnabled,
-      slackEnabled,
-      emailAddress,
-      slackWebhook
-    });
+    // Save notification settings
   };
 
   return (

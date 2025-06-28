@@ -25,7 +25,7 @@ export class AuthService {
       } else if (response.user || response.success || response.message) {
         // Case 2: Signup only creates user account (no tokens)
         // This is common - user needs to login separately
-        console.log('AuthService - User account created successfully, no auto-login');
+        // User account created successfully, no auto-login
         
         // Ensure we return a consistent response structure
         return {
@@ -44,7 +44,7 @@ export class AuthService {
       
       // For development: if API is not available, simulate successful signup
       if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
-        console.log('AuthService - API not available, simulating successful signup');
+        // API not available, simulating successful signup
         return {
           success: true,
           message: 'Account created successfully (simulated)',

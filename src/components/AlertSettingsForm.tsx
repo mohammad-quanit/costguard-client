@@ -12,11 +12,7 @@ export const AlertSettingsForm = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Saving alert settings:", {
-      monthlyBudget: parseFloat(monthlyBudget),
-      dailyLimit: parseFloat(dailyLimit),
-      warningThreshold: parseFloat(warningThreshold)
-    });
+    // Save alert settings
   };
 
   return (

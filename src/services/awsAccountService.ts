@@ -68,7 +68,36 @@ export class AWSAccountService {
       return accounts;
     } catch (error) {
       console.error('AWSAccountService - Error fetching accounts:', error);
-      // Return empty array if API fails to prevent UI crashes
+      
+      // Return mock data for development/testing if API fails
+      const mockAccounts: AWSAccount[] = [
+        {
+          accountId: 'mock-account-1',
+          awsAccountId: '123456789012',
+          accountAlias: 'Production Account',
+          region: 'us-east-1',
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          accountId: 'mock-account-2', 
+          awsAccountId: '987654321098',
+          accountAlias: 'Development Account',
+          region: 'us-west-2',
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      ];
+      
+      // Only return mock data in development
+      if (process.env.NODE_ENV === 'development') {
+        // Using mock data for development
+        return mockAccounts;
+      }
+      
+      // Return empty array in production if API fails
       return [];
     }
   }

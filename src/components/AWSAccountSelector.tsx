@@ -55,27 +55,30 @@ export const AWSAccountSelector = () => {
       >
         <SelectTrigger className="w-64">
           <SelectValue placeholder="Select AWS Account">
-            {selectedAccount && (
+            {selectedAccount ? (
               <div className="flex items-center justify-between w-full">
-                <span className="truncate">{selectedAccount.accountAlias}</span>
-                {getStatusBadge(selectedAccount.status)}
+                <span className="truncate">
+                  {selectedAccount.accountAlias || selectedAccount.awsAccountId || 'Unknown Account'}
+                </span>
+                <div className="ml-2">
+                  {getStatusBadge(selectedAccount.status)}
+                </div>
               </div>
+            ) : (
+              "Select AWS Account"
             )}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {accounts.map((account) => (
             <SelectItem key={account.accountId} value={account.accountId}>
-              <div className="flex items-center justify-between w-full">
-                <div className="flex flex-col">
-                  <span className="font-medium">{account.accountAlias}</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {account.awsAccountId} • {account.region}
-                  </span>
-                </div>
-                <div className="ml-2">
-                  {getStatusBadge(account.status)}
-                </div>
+              <div className="flex flex-col">
+                <span className="font-medium">
+                  {account.accountAlias || account.awsAccountId || 'Unknown Account'}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {account.awsAccountId || account.accountId} • {account.region || 'Unknown Region'}
+                </span>
               </div>
             </SelectItem>
           ))}

@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 // Don't fail the auth if profile fetch fails
                 // But if it's a 401/403, the token might be invalid
                 if (error.response?.status === 401 || error.response?.status === 403) {
-                  console.log('AuthContext - Token appears invalid, signing out');
+                  // Token appears invalid, signing out
                   AuthService.signOut();
                   setState(prev => ({
                     ...prev,
@@ -219,13 +219,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         lastName 
       });
       
-      console.log('AuthContext - Signup response:', {
-        hasTokens: !!response.tokens,
-        hasUser: !!response.user,
-        hasSuccess: !!response.success,
-        message: response.message
-      });
-      
       // Handle different signup response patterns
       if (response.tokens?.accessToken && response.user) {
         // Case 1: Signup with auto-login (tokens provided)
@@ -240,7 +233,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }));
       } else if (response.user || response.success || response.message) {
         // Case 2: Signup without auto-login - automatically sign in the user
-        console.log('AuthContext - Account created successfully, signing in automatically');
+        // Account created successfully, signing in automatically
         
         try {
           // Automatically sign in the user after successful signup

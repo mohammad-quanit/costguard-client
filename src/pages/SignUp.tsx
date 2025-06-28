@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { DollarSign, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AWSAccountModal } from "@/components/AWSAccountModal";
+import { Logo } from "@/components/Logo";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -109,7 +110,7 @@ const SignUp = () => {
 
   const handleAWSAccountSuccess = () => {
     // Close modal and redirect to dashboard
-    console.log('handleAWSAccountSuccess called - redirecting to dashboard');
+    // handleAWSAccountSuccess called - redirecting to dashboard
     setShowAWSModal(false);
     navigate('/', { replace: true });
   };
@@ -174,8 +175,8 @@ const SignUp = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg mx-auto mb-4">
-            <DollarSign className="h-6 w-6 text-white" />
+          <div className="flex items-center justify-center mx-auto mb-4">
+            <Logo size="large" />
           </div>
           <CardTitle className="text-2xl text-slate-900 dark:text-slate-100">Create Account</CardTitle>
           <CardDescription className="text-slate-600 dark:text-slate-400">
