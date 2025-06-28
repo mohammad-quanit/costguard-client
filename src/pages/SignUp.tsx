@@ -80,9 +80,9 @@ const SignUp = () => {
       
       setSuccess(true);
       
-      // Redirect to dashboard after successful signup
+      // Redirect to AWS Account Setup after successful signup
       setTimeout(() => {
-        navigate('/');
+        navigate('/aws-account-setup');
       }, 2000);
       
     } catch (error: any) {
@@ -123,11 +123,11 @@ const SignUp = () => {
               Account Created Successfully!
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
-              Welcome to CostGuard! Redirecting you to the dashboard...
+              Welcome to CostGuard! Next, let's connect your AWS account to start monitoring costs.
             </p>
             <div className="flex items-center justify-center">
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              <span className="text-sm text-slate-500 dark:text-slate-400">Loading dashboard...</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">Redirecting to AWS setup...</span>
             </div>
           </CardContent>
         </Card>

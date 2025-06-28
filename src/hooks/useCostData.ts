@@ -252,7 +252,8 @@ export const useCostData = () => {
     queryKey: ['costUsage'],
     queryFn: CostService.getCostUsage,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
+    refetchOnReconnect: false, // Don't refetch when network reconnects
     retry: 2, // Retry failed requests 2 times
     retryDelay: 1000, // Wait 1 second between retries
   });

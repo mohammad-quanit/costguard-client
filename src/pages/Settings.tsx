@@ -5,13 +5,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAWSAccounts } from "@/hooks/useAWSAccounts";
+import { AWSAccountSetup } from "@/components/AWSAccountSetup";
 import { 
   Palette, 
   User, 
   Save, 
-  AlertTriangle
+  AlertTriangle,
+  Cloud,
+  Plus,
+  Trash2,
+  Loader2,
+  Settings as SettingsIcon
 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 
@@ -20,6 +28,17 @@ const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [showAddAccount, setShowAddAccount] = useState(false);
+
+  // AWS Accounts hook
+  const { 
+    accounts, 
+    isLoading: accountsLoading, 
+    isRemoving, 
+    error: accountsError, 
+    removeAccount, 
+    refreshAccounts 
+  } = useAWSAccounts();
 
   // User preferences state
   const [userPreferences, setUserPreferences] = useState({
@@ -49,6 +68,45 @@ const Settings = () => {
       setIsLoading(false);
     }
   };
+
+  // AWS Account management functions
+  const handleRemoveAccount = async (accountId: string, accountAlias: string) => {
+    if (window.confirm(`Are you sure you want to remove "${accountAlias}"? This will stop cost monitoring for this account.`)) {
+      try {
+        await removeAccount(accountId);
+      } catch (error) {
+        // Error is handled by the hook and displayed in the UI
+      }
+    }
+  };
+
+  const handleAccountAdded = () => {
+    setShowAddAccount(false);
+    refreshAccounts();
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>;
+      case 'validating':
+        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Validating</Badge>;
+      case 'inactive':
+        return <Badge className="bg-red-100 text-red-800 border-red-200">Inactive</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  // Show AWS Account Setup modal
+  if (showAddAccount) {
+    return (
+      <AWSAccountSetup 
+        onAccountAdded={handleAccountAdded}
+        onSkip={() => setShowAddAccount(false)}
+      />
+    );
+  }
 
   return (
     <Layout>
@@ -186,6 +244,94 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <ThemeToggle />
+            </CardContent>
+          </Card>
+
+          {/* AWS Accounts Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Cloud className="h-5 w-5 mr-2" />
+                AWS Accounts
+              </CardTitle>
+              <CardDescription>
+                Manage your AWS accounts for cost monitoring and budget management
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Error Alert */}
+              {accountsError && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>{accountsError}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Add Account Button */}
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-gray-600">
+                  {accounts.length === 0 
+                    ? "No AWS accounts connected. Add your first account to start monitoring costs."
+                    : `${accounts.length} AWS account${accounts.length > 1 ? 's' : ''} connected`
+                  }
+                </p>
+                <Button onClick={() => setShowAddAccount(true)} size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Account
+                </Button>
+              </div>
+
+              {/* Accounts List */}
+              {accountsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  <span className="ml-2 text-gray-600">Loading AWS accounts...</span>
+                </div>
+              ) : accounts.length > 0 ? (
+                <div className="space-y-3">
+                  {accounts.map((account) => (
+                    <div key={account.accountId} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium">{account.accountAlias}</h4>
+                          {getStatusBadge(account.status)}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          <span>Account ID: {account.accountId}</span>
+                          <span className="mx-2">•</span>
+                          <span>Region: {account.region}</span>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Added: {new Date(account.createdAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          <SettingsIcon className="h-3 w-3" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleRemoveAccount(account.accountId, account.accountAlias)}
+                          disabled={isRemoving}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          {isRemoving ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-3 w-3" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Cloud className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <p>No AWS accounts connected</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
