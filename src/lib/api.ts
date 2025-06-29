@@ -2,7 +2,7 @@
 // API Configuration
 const API_BASE_URL = import.meta.env.DEV
   ? '/api' // Use proxy in development
-  : 'https://9nr4780m2j.execute-api.us-east-1.amazonaws.com/dev'; // Direct API in production
+  : 'https://v49jjlxhmc.execute-api.us-east-1.amazonaws.com/dev'; // Direct API in production
 
 // API Client class for handling requests
 class ApiClient {

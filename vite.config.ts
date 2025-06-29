@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       '/api': {
-        target: 'https://9nr4780m2j.execute-api.us-east-1.amazonaws.com/dev',
+        target: 'https://v49jjlxhmc.execute-api.us-east-1.amazonaws.com/dev',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         secure: true,
